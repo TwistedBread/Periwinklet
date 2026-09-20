@@ -4,235 +4,114 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Periwinklet</title>
+  <link rel="icon" type="image/png" href="img/logo.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Titan+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Nunito', sans-serif; background: #c9c3ff; color: #2e2a4e; min-height: 100vh; }
-    .hidden { display: none !important; }
-    .page { min-height: 100vh; }
-
-    .split { display: flex; min-height: 100vh; }
-    .split-left {
-      flex: 1; background: #9b8cf5; padding: 28px 48px;
-      display: flex; flex-direction: column; position: relative;
-    }
-    .split-right {
-      flex: 1; background: #b5aaff; position: relative; overflow: hidden;
-    }
-    .logo {
-      font-family: 'Titan One', cursive; font-size: 3.5rem; color: white;
-      text-shadow: 0 5px 0 rgba(70,60,150,0.35); letter-spacing: 1px;
-    }
-    .hero {
-      flex: 1; display: flex; flex-direction: column; justify-content: center; max-width: 420px;
-    }
-    .hero-title {
-      font-family: 'Titan One', cursive; font-size: 3.6rem; color: white;
-      line-height: 1.15; text-shadow: 0 4px 0 rgba(70,60,150,0.3); margin-bottom: 18px;
-    }
-    .hero-desc {
-      font-size: 1.15rem; color: rgba(255,255,255,0.9); font-weight: 600;
-      line-height: 1.5; margin-bottom: 28px;
-    }
-    .btn-getstarted {
-      background: transparent; border: 3px solid white; color: white;
-      font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 1.1rem;
-      padding: 12px 28px; border-radius: 12px; cursor: pointer; width: fit-content;
-      transition: background 0.2s, color 0.2s;
-    }
-    .btn-getstarted:hover { background: white; color: #7b6ef0; }
-    .pronunciation {
-      display: flex; align-items: center; gap: 8px; margin-top: 22px;
-      color: rgba(255,255,255,0.85); font-weight: 600; cursor: pointer;
-      width: fit-content; padding: 6px 10px; border-radius: 8px; transition: background 0.2s;
-    }
-    .pronunciation:hover { background: rgba(255,255,255,0.15); }
-    .creator-credit {
-      color: rgba(255,255,255,0.75); font-size: 0.95rem; margin-top: auto; padding-bottom: 8px;
-    }
-    .creator-credit a { color: white; font-weight: 700; text-decoration: none; }
-    .creator-credit a:hover { text-decoration: underline; }
-
-    .auth-btns {
-      position: absolute; top: 24px; right: 28px; display: flex; gap: 10px; z-index: 5;
-    }
-    .btn-login {
-      background: white; color: #6b5fd4; border: none; font-weight: 800;
-      font-family: 'Nunito', sans-serif; padding: 10px 22px; border-radius: 10px;
-      cursor: pointer; box-shadow: 0 3px 0 #d4d0f0;
-    }
-    .btn-register {
-      background: #7b6ef0; color: white; border: none; font-weight: 800;
-      font-family: 'Nunito', sans-serif; padding: 10px 22px; border-radius: 10px;
-      cursor: pointer; box-shadow: 0 3px 0 #5c52c7;
-    }
-    .btn-login:hover, .btn-register:hover { transform: translateY(-2px); }
-
-    .circle { position: absolute; border-radius: 50%; background: rgba(255,255,255,0.18); }
-    .c1 { width: 140px; height: 140px; top: 12%; left: 18%; }
-    .c2 { width: 90px; height: 90px; top: 28%; left: 55%; }
-    .c3 { width: 160px; height: 160px; top: 48%; left: 30%; }
-    .c4 { width: 70px; height: 70px; top: 65%; left: 65%; }
-    .c5 { width: 110px; height: 110px; top: 75%; left: 15%; }
-    .c6 { width: 50px; height: 50px; top: 18%; left: 75%; }
-
-    .modal {
-      position: fixed; inset: 0; background: rgba(50,40,120,0.55);
-      display: flex; align-items: center; justify-content: center; z-index: 100;
-    }
-    .modal-box {
-      background: #f4f1ff; border-radius: 20px; padding: 36px 32px;
-      width: 90%; max-width: 400px; position: relative;
-      box-shadow: 0 16px 40px rgba(80,60,160,0.3); max-height: 90vh; overflow-y: auto;
-    }
-    .modal-box h2 {
-      font-family: 'Titan One', cursive; font-size: 1.9rem; color: #6b5fd4;
-      text-align: center; margin-bottom: 20px;
-    }
-    .modal-box input {
-      width: 100%; padding: 13px 16px; margin-bottom: 12px;
-      border: 2px solid #d5d0f5; border-radius: 12px; font-size: 1rem;
-      font-family: 'Nunito', sans-serif; outline: none; background: white;
-    }
-    .modal-box input:focus { border-color: #7b6ef0; }
-    .error { color: #e74c3c; font-size: 0.9rem; min-height: 20px; }
-    .success { color: #2e7d32; font-size: 0.9rem; min-height: 20px; }
-    .btn-primary {
-      width: 100%; background: #7b6ef0; color: white; border: none;
-      font-weight: 800; font-family: 'Nunito', sans-serif; font-size: 1.05rem;
-      padding: 13px; border-radius: 12px; cursor: pointer; margin-top: 6px;
-      box-shadow: 0 4px 0 #5c52c7;
-    }
-    .btn-primary:hover { background: #8b7ff5; }
-    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
-    .switch { text-align: center; margin-top: 16px; color: #6a6590; }
-    .switch span { color: #6b5fd4; font-weight: 700; cursor: pointer; }
-    .modal-x {
-      position: absolute; top: 14px; right: 16px; background: none;
-      border: none; font-size: 1.2rem; color: #999; cursor: pointer;
-    }
-    .admin-section {
-      background: #ebe7ff; border-radius: 12px; padding: 16px; margin-bottom: 16px;
-    }
-    .admin-section h3 {
-      font-size: 1rem; color: #5c52c7; margin-bottom: 10px; font-weight: 800;
-    }
-
-    #dashboard { display: flex; min-height: 100vh; background: #d8d3ff; }
-    .sidebar {
-      width: 240px; background: #7b6ef0; color: white;
-      display: flex; flex-direction: column; padding: 24px 16px;
-    }
-    .sidebar-top {
-      display: flex; align-items: center; gap: 10px; padding: 0 6px 28px; flex-wrap: wrap;
-    }
-    .sidebar-top .logo { font-size: 1.55rem; }
-    .beta-tag {
-      background: rgba(255,255,255,0.25); font-size: 0.7rem; font-weight: 800;
-      padding: 3px 9px; border-radius: 6px; letter-spacing: 1px;
-    }
-    .nav { display: flex; flex-direction: column; gap: 6px; flex: 1; }
-    .nav-btn {
-      background: transparent; border: none; color: rgba(255,255,255,0.8);
-      font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 1rem;
-      padding: 12px 14px; border-radius: 11px; cursor: pointer; text-align: left;
-      transition: background 0.2s, color 0.2s;
-    }
-    .nav-btn:hover { background: rgba(255,255,255,0.15); color: white; }
-    .nav-btn.active { background: white; color: #6b5fd4; }
-    .sidebar-bottom {
-      display: flex; flex-direction: column; gap: 8px; margin-top: 12px;
-    }
-    .admin-icon-btn {
-      background: rgba(255,255,255,0.12); border: none; color: white;
-      font-size: 1.3rem; padding: 10px; border-radius: 11px; cursor: pointer;
-      transition: background 0.2s;
-    }
-    .admin-icon-btn:hover { background: rgba(255,255,255,0.25); }
-    .logout-btn {
-      background: rgba(255,255,255,0.15); border: none; color: white;
-      font-weight: 700; font-family: 'Nunito', sans-serif; padding: 11px;
-      border-radius: 11px; cursor: pointer;
-    }
-    .logout-btn:hover { background: rgba(255,255,255,0.28); }
-    .content { flex: 1; padding: 40px; }
-    .panel { animation: fadeIn 0.3s ease; }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .stats-box {
-      background: white; border-radius: 24px; padding: 60px 40px;
-      display: flex; flex-direction: column; align-items: center; gap: 18px;
-      max-width: 420px; margin: 0 auto;
-      box-shadow: 0 8px 28px rgba(100,80,180,0.12);
-    }
-    .avatar {
-      width: 110px; height: 110px; border-radius: 50%;
-      background: linear-gradient(135deg, #9b8cf5, #7b6ef0);
-      display: flex; align-items: center; justify-content: center;
-      font-family: 'Titan One', cursive; font-size: 3.2rem; color: white;
-      text-transform: uppercase; box-shadow: 0 6px 0 #5c52c7;
-    }
-    .uname {
-      font-family: 'Titan One', cursive; font-size: 2.1rem; color: #5c52c7;
-      display: flex; align-items: center; gap: 8px;
-    }
-    .checkmark-rose { color: #e91e8c; font-size: 1.5rem; }
-    .checkmark-blue { color: #2196f3; font-size: 1.5rem; }
-    .coins-display {
-      font-size: 1.2rem; font-weight: 700; color: #7b6ef0;
-      background: #f0edff; padding: 8px 18px; border-radius: 12px;
-    }
-
-    .empty {
-      background: white; border-radius: 24px; padding: 80px 30px;
-      text-align: center; max-width: 500px; margin: 30px auto 0;
-      box-shadow: 0 8px 28px rgba(100,80,180,0.1);
-    }
-    .empty h2 {
-      font-family: 'Titan One', cursive; font-size: 1.9rem; color: #7b6ef0; margin-bottom: 8px;
-    }
-    .empty p { color: #8a85b0; font-weight: 600; font-size: 1.1rem; }
-
-    .updates-card {
-      background: white; border-radius: 20px; padding: 28px 30px;
-      max-width: 500px; box-shadow: 0 8px 28px rgba(100,80,180,0.1);
-    }
-    .updates-card h2 {
-      font-family: 'Titan One', cursive; font-size: 1.9rem; color: #5c52c7; margin-bottom: 16px;
-    }
-    .ver {
-      display: inline-block; background: #7b6ef0; color: white; font-weight: 800;
-      font-size: 0.8rem; padding: 3px 11px; border-radius: 7px; margin-bottom: 14px;
-    }
-    .updates-card ul { list-style: none; line-height: 1.85; color: #4a4575; }
-    .updates-card li::before { content: "• "; color: #7b6ef0; font-weight: 800; }
-    .by { margin-top: 16px; font-weight: 700; color: #6b5fd4; }
-
-    @media (max-width: 800px) {
-      .split { flex-direction: column; }
-      .hero-title { font-size: 2.6rem; }
-      .logo { font-size: 2.6rem; }
-      .split-left, .split-right { padding: 24px; }
-      .circle { display: none; }
-      #dashboard { flex-direction: column; }
-      .sidebar {
-        width: 100%; flex-direction: row; flex-wrap: wrap;
-        align-items: center; gap: 8px; padding: 12px;
-      }
-      .sidebar-top { padding: 0; }
-      .nav { flex-direction: row; flex-wrap: wrap; }
-      .content { padding: 24px 16px; }
-    }
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Nunito',sans-serif;background:#c9c3ff;color:#2e2a4e;min-height:100vh}
+    .hidden{display:none!important}
+    .page{min-height:100vh}
+    .split{display:flex;min-height:100vh}
+    .split-left{flex:1;background:#9b8cf5;padding:28px 48px;display:flex;flex-direction:column;position:relative}
+    .split-right{flex:1;background:#b5aaff;position:relative;overflow:hidden}
+    .logo{font-family:'Titan One',cursive;font-size:3.5rem;color:#fff;text-shadow:0 5px 0 rgba(70,60,150,.35);letter-spacing:1px}
+    .hero{flex:1;display:flex;flex-direction:column;justify-content:center;max-width:420px}
+    .hero-title{font-family:'Titan One',cursive;font-size:3.6rem;color:#fff;line-height:1.15;text-shadow:0 4px 0 rgba(70,60,150,.3);margin-bottom:18px}
+    .hero-desc{font-size:1.15rem;color:rgba(255,255,255,.9);font-weight:600;line-height:1.5;margin-bottom:28px}
+    .btn-getstarted{background:transparent;border:3px solid #fff;color:#fff;font-family:'Nunito',sans-serif;font-weight:800;font-size:1.1rem;padding:12px 28px;border-radius:12px;cursor:pointer;width:fit-content;transition:background .2s,color .2s}
+    .btn-getstarted:hover{background:#fff;color:#7b6ef0}
+    .pronunciation{display:flex;align-items:center;gap:8px;margin-top:22px;color:rgba(255,255,255,.85);font-weight:600;cursor:pointer;width:fit-content;padding:6px 10px;border-radius:8px}
+    .pronunciation:hover{background:rgba(255,255,255,.15)}
+    .creator-credit{color:rgba(255,255,255,.75);font-size:.95rem;margin-top:auto;padding-bottom:8px}
+    .creator-credit a{color:#fff;font-weight:700;text-decoration:none}
+    .creator-credit a:hover{text-decoration:underline}
+    .auth-btns{position:absolute;top:24px;right:28px;display:flex;gap:10px;z-index:5}
+    .btn-login{background:#fff;color:#6b5fd4;border:none;font-weight:800;font-family:'Nunito',sans-serif;padding:10px 22px;border-radius:10px;cursor:pointer;box-shadow:0 3px 0 #d4d0f0}
+    .btn-register{background:#7b6ef0;color:#fff;border:none;font-weight:800;font-family:'Nunito',sans-serif;padding:10px 22px;border-radius:10px;cursor:pointer;box-shadow:0 3px 0 #5c52c7}
+    .btn-login:hover,.btn-register:hover{transform:translateY(-2px)}
+    .circle{position:absolute;border-radius:50%;background:rgba(255,255,255,.18)}
+    .c1{width:140px;height:140px;top:12%;left:18%}.c2{width:90px;height:90px;top:28%;left:55%}.c3{width:160px;height:160px;top:48%;left:30%}
+    .c4{width:70px;height:70px;top:65%;left:65%}.c5{width:110px;height:110px;top:75%;left:15%}.c6{width:50px;height:50px;top:18%;left:75%}
+    .modal{position:fixed;inset:0;background:rgba(50,40,120,.55);display:flex;align-items:center;justify-content:center;z-index:100}
+    .modal-box{background:#f4f1ff;border-radius:20px;padding:36px 32px;width:90%;max-width:420px;position:relative;box-shadow:0 16px 40px rgba(80,60,160,.3);max-height:90vh;overflow-y:auto}
+    .modal-box h2{font-family:'Titan One',cursive;font-size:1.9rem;color:#6b5fd4;text-align:center;margin-bottom:20px}
+    .modal-box input{width:100%;padding:13px 16px;margin-bottom:12px;border:2px solid #d5d0f5;border-radius:12px;font-size:1rem;font-family:'Nunito',sans-serif;outline:none;background:#fff}
+    .modal-box input:focus{border-color:#7b6ef0}
+    .error{color:#e74c3c;font-size:.9rem;min-height:20px}.success{color:#2e7d32;font-size:.9rem;min-height:20px}
+    .btn-primary{width:100%;background:#7b6ef0;color:#fff;border:none;font-weight:800;font-family:'Nunito',sans-serif;font-size:1.05rem;padding:13px;border-radius:12px;cursor:pointer;margin-top:6px;box-shadow:0 4px 0 #5c52c7}
+    .btn-primary:hover{background:#8b7ff5}.btn-primary:disabled{opacity:.6;cursor:not-allowed}
+    .switch{text-align:center;margin-top:16px;color:#6a6590}.switch span{color:#6b5fd4;font-weight:700;cursor:pointer}
+    .modal-x{position:absolute;top:14px;right:16px;background:none;border:none;font-size:1.2rem;color:#999;cursor:pointer}
+    .admin-section{background:#ebe7ff;border-radius:12px;padding:16px;margin-bottom:16px}
+    .admin-section h3{font-size:1rem;color:#5c52c7;margin-bottom:10px;font-weight:800}
+    #dashboard{display:flex;min-height:100vh;background:#d8d3ff}
+    .sidebar{width:240px;background:#7b6ef0;color:#fff;display:flex;flex-direction:column;padding:24px 16px}
+    .sidebar-top{display:flex;align-items:center;gap:10px;padding:0 6px 28px;flex-wrap:wrap}
+    .sidebar-top .logo{font-size:1.55rem}
+    .beta-tag{background:rgba(255,255,255,.25);font-size:.7rem;font-weight:800;padding:3px 9px;border-radius:6px;letter-spacing:1px}
+    .nav{display:flex;flex-direction:column;gap:6px;flex:1}
+    .nav-btn{background:transparent;border:none;color:rgba(255,255,255,.8);font-family:'Nunito',sans-serif;font-weight:700;font-size:1rem;padding:12px 14px;border-radius:11px;cursor:pointer;text-align:left;transition:background .2s,color .2s}
+    .nav-btn:hover{background:rgba(255,255,255,.15);color:#fff}.nav-btn.active{background:#fff;color:#6b5fd4}
+    .sidebar-bottom{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+    .admin-icon-btn{background:rgba(255,255,255,.12);border:none;color:#fff;font-size:1.3rem;padding:10px;border-radius:11px;cursor:pointer}
+    .admin-icon-btn:hover{background:rgba(255,255,255,.25)}
+    .logout-btn{background:rgba(255,255,255,.15);border:none;color:#fff;font-weight:700;font-family:'Nunito',sans-serif;padding:11px;border-radius:11px;cursor:pointer}
+    .logout-btn:hover{background:rgba(255,255,255,.28)}
+    .content{flex:1;padding:40px;overflow-y:auto}
+    .panel{animation:fadeIn .3s ease}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+    .stats-box{background:#fff;border-radius:24px;padding:50px 40px;display:flex;flex-direction:column;align-items:center;gap:14px;max-width:480px;margin:0 auto;box-shadow:0 8px 28px rgba(100,80,180,.12)}
+    .avatar{width:110px;height:110px;border-radius:50%;background:linear-gradient(135deg,#9b8cf5,#7b6ef0);display:flex;align-items:center;justify-content:center;font-family:'Titan One',cursive;font-size:3.2rem;color:#fff;text-transform:uppercase;box-shadow:0 6px 0 #5c52c7}
+    .uname{font-family:'Titan One',cursive;font-size:2.1rem;color:#5c52c7;display:flex;align-items:center;gap:8px;position:relative}
+    .checkmark-rose{color:#e91e8c;font-size:1.5rem;cursor:help;position:relative}
+    .checkmark-blue{color:#2196f3;font-size:1.5rem;cursor:help;position:relative}
+    .checkmark-gold{color:#ffc107;font-size:1.5rem;cursor:help;position:relative;text-shadow:0 0 6px rgba(255,193,7,.5)}
+    .checkmark-teal{color:#26c6a0;font-size:1.5rem;cursor:help;position:relative}
+    .tip{display:none;position:absolute;bottom:120%;left:50%;transform:translateX(-50%);background:#2e2a4e;color:#fff;font-family:'Nunito',sans-serif;font-size:.75rem;font-weight:600;padding:8px 12px;border-radius:8px;white-space:nowrap;z-index:20}
+    .checkmark-rose:hover .tip,.checkmark-blue:hover .tip,.checkmark-gold:hover .tip,.checkmark-teal:hover .tip{display:block}
+    .coins-row{display:flex;align-items:center;gap:8px;font-size:1.2rem;font-weight:700;color:#7b6ef0;background:#f0edff;padding:8px 18px;border-radius:12px}
+    .coins-row img{width:28px;height:28px}
+    .role-badge{font-weight:800;font-size:.9rem;padding:5px 14px;border-radius:20px;background:#ebe7ff;color:#5c52c7}
+    .role-owner{background:#fce4ec;color:#e91e8c}.role-periwinkle{background:#fff8e1;color:#f9a825}.role-creator{background:#e3f2fd;color:#1976d2}
+    .badges-section{margin-top:12px;width:100%;text-align:center}
+    .badges-section h3{font-size:.95rem;color:#8a85b0;margin-bottom:10px}
+    .badges-row{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+    .badge-item{width:48px;height:48px;border-radius:50%;background:#f0edff;display:flex;align-items:center;justify-content:center;overflow:hidden;border:2px solid #d5d0f5}
+    .badge-item img{width:36px;height:36px;object-fit:contain}
+    .empty{background:#fff;border-radius:24px;padding:80px 30px;text-align:center;max-width:500px;margin:30px auto 0;box-shadow:0 8px 28px rgba(100,80,180,.1)}
+    .empty h2{font-family:'Titan One',cursive;font-size:1.9rem;color:#7b6ef0;margin-bottom:8px}
+    .empty p{color:#8a85b0;font-weight:600;font-size:1.1rem}
+    .updates-card{background:#fff;border-radius:20px;padding:28px 30px;max-width:560px;box-shadow:0 8px 28px rgba(100,80,180,.1)}
+    .updates-card h2{font-family:'Titan One',cursive;font-size:1.9rem;color:#5c52c7;margin-bottom:16px}
+    .ver{display:inline-block;background:#7b6ef0;color:#fff;font-weight:800;font-size:.8rem;padding:3px 11px;border-radius:7px;margin-bottom:14px}
+    .updates-card ul{list-style:none;line-height:1.85;color:#4a4575}
+    .updates-card li::before{content:"• ";color:#7b6ef0;font-weight:800}
+    .by{margin-top:16px;font-weight:700;color:#6b5fd4}
+    .chat-wrap{background:#9b8cf5;border-radius:20px;max-width:700px;margin:0 auto;overflow:hidden;box-shadow:0 8px 28px rgba(100,80,180,.15);display:flex;flex-direction:column;height:520px}
+    .chat-header{padding:12px 18px;background:rgba(0,0,0,.12);display:flex;justify-content:space-between;align-items:center;color:#fff;font-weight:700}
+    .chat-msgs{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px}
+    .chat-msg{background:rgba(255,255,255,.18);border-radius:12px;padding:10px 14px;color:#fff}
+    .chat-msg .meta{font-size:.8rem;opacity:.85;margin-bottom:4px;display:flex;align-items:center;gap:6px}
+    .chat-msg .meta .ck{font-size:1rem}
+    .chat-input-row{display:flex;gap:8px;padding:12px;background:rgba(0,0,0,.1)}
+    .chat-input-row input{flex:1;border:none;border-radius:10px;padding:12px 14px;font-family:'Nunito',sans-serif;font-size:1rem;outline:none}
+    .chat-input-row button{background:#5c52c7;color:#fff;border:none;border-radius:10px;padding:12px 18px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif}
+    .market-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px;max-width:700px;margin:0 auto}
+    .ball-card{background:#fff;border-radius:16px;padding:16px;text-align:center;box-shadow:0 6px 20px rgba(100,80,180,.12)}
+    .ball-card h3{font-family:'Titan One',cursive;color:#5c52c7;margin:8px 0}
+    .ball-card .price{display:flex;align-items:center;justify-content:center;gap:6px;font-weight:800;color:#7b6ef0;margin-bottom:10px}
+    .ball-card .price img{width:22px;height:22px}
+    .ball-card button{width:100%;background:#7b6ef0;color:#fff;border:none;border-radius:10px;padding:10px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif}
+    .ball-card button:disabled{opacity:.5;cursor:not-allowed}
+    .discord-link{color:#6b5fd4;font-weight:700;text-decoration:none}
+    .discord-link:hover{text-decoration:underline}
+    @media(max-width:800px){.split{flex-direction:column}.hero-title{font-size:2.6rem}.logo{font-size:2.6rem}.circle{display:none}#dashboard{flex-direction:column}.sidebar{width:100%;flex-direction:row;flex-wrap:wrap;align-items:center;gap:8px;padding:12px}.nav{flex-direction:row;flex-wrap:wrap}.content{padding:24px 16px}.chat-wrap{height:420px}}
   </style>
 </head>
 <body>
-
   <div id="homepage" class="page">
     <div class="split">
       <div class="split-left">
@@ -241,25 +120,17 @@
           <h1 class="hero-title">Blooket.<br>But.<br>Periwinkle.</h1>
           <p class="hero-desc">The first periwinkle themed Blooket private server<br>Currently in Beta</p>
           <button class="btn-getstarted" onclick="showRegister()">Get Started</button>
-          <div class="pronunciation" onclick="playPronunciation()">
-            🔊 Pronunciation ("Periwinklet")
-          </div>
+          <div class="pronunciation" onclick="playPronunciation()">🔊 Pronunciation ("Periwinklet")</div>
         </div>
-        <p class="creator-credit">
-          Created by <a href="https://www.youtube.com/@TwistedBread" target="_blank">TwistedBread</a>
-        </p>
+        <p class="creator-credit">Created by <a href="https://www.youtube.com/@TwistedBread" target="_blank">TwistedBread</a> · <a class="discord-link" href="https://discord.gg/f8pkTJvyQ" target="_blank" style="color:#fff">Periwinklet Discord</a></p>
       </div>
       <div class="split-right">
         <div class="auth-btns">
           <button class="btn-login" onclick="showLogin()">Login</button>
           <button class="btn-register" onclick="showRegister()">Register</button>
         </div>
-        <div class="circle c1"></div>
-        <div class="circle c2"></div>
-        <div class="circle c3"></div>
-        <div class="circle c4"></div>
-        <div class="circle c5"></div>
-        <div class="circle c6"></div>
+        <div class="circle c1"></div><div class="circle c2"></div><div class="circle c3"></div>
+        <div class="circle c4"></div><div class="circle c5"></div><div class="circle c6"></div>
       </div>
     </div>
   </div>
@@ -296,9 +167,23 @@
       <div class="admin-section">
         <h3>Grant Coins</h3>
         <input type="text" id="admin-coin-user" placeholder="Username" />
-        <input type="number" id="admin-coin-amount" placeholder="Amount of coins" min="1" />
+        <input type="number" id="admin-coin-amount" placeholder="Amount" min="1" />
         <button class="btn-primary" onclick="adminGrantCoins()">Grant Coins</button>
         <p id="admin-coin-msg" class="success"></p>
+      </div>
+      <div class="admin-section">
+        <h3>Remove Coins</h3>
+        <input type="text" id="admin-remove-user" placeholder="Username" />
+        <input type="number" id="admin-remove-amount" placeholder="Amount" min="1" />
+        <button class="btn-primary" onclick="adminRemoveCoins()">Remove Coins</button>
+        <p id="admin-remove-msg" class="success"></p>
+      </div>
+      <div class="admin-section">
+        <h3>Set Coins Exactly</h3>
+        <input type="text" id="admin-set-user" placeholder="Username" />
+        <input type="number" id="admin-set-amount" placeholder="Exact amount" min="0" />
+        <button class="btn-primary" onclick="adminSetCoins()">Set Coins</button>
+        <p id="admin-set-msg" class="success"></p>
       </div>
       <div class="admin-section">
         <h3>Add Content Creator</h3>
@@ -312,6 +197,18 @@
         <button class="btn-primary" onclick="adminRemoveCreator()">Remove Creator</button>
         <p id="admin-uncreator-msg" class="success"></p>
       </div>
+      <div class="admin-section">
+        <h3>Add Winkle (coming soon)</h3>
+        <input type="text" id="admin-winkle-name" placeholder="Winkle name" />
+        <button class="btn-primary" onclick="adminAddWinkle()">Queue Winkle</button>
+        <p id="admin-winkle-msg" class="success"></p>
+      </div>
+      <div class="admin-section">
+        <h3>Lookup User</h3>
+        <input type="text" id="admin-lookup-user" placeholder="Username" />
+        <button class="btn-primary" onclick="adminLookup()">Lookup</button>
+        <p id="admin-lookup-msg" class="success"></p>
+      </div>
     </div>
   </div>
 
@@ -322,9 +219,9 @@
         <span class="beta-tag">BETA</span>
       </div>
       <nav class="nav">
-        <button class="nav-btn active" data-tab="stats" onclick="switchTab('stats')">Stats</button>
-        <button class="nav-btn" data-tab="winkles" onclick="switchTab('winkles')">Winkles</button>
+        <button class="nav-btn active" data-tab="stats" onclick="switchTab('stats')">Profile</button>
         <button class="nav-btn" data-tab="market" onclick="switchTab('market')">Market</button>
+        <button class="nav-btn" data-tab="winkles" onclick="switchTab('winkles')">Winkles</button>
         <button class="nav-btn" data-tab="chat" onclick="switchTab('chat')">Chat</button>
         <button class="nav-btn" data-tab="updates" onclick="switchTab('updates')">Updates</button>
       </nav>
@@ -333,51 +230,61 @@
         <button class="logout-btn" onclick="handleLogout()">Logout</button>
       </div>
     </aside>
-
     <main class="content">
       <section id="tab-stats" class="panel">
         <div class="stats-box">
           <div id="stats-avatar" class="avatar"></div>
           <h1 id="stats-username" class="uname"></h1>
-          <div id="stats-coins" class="coins-display">0 coins</div>
+          <div id="stats-coins" class="coins-row"><img src="img/coin.png" alt="coin" /> <span id="coins-num">0</span></div>
+          <div id="stats-role" class="role-badge">Player</div>
+          <div class="badges-section">
+            <h3>Badges</h3>
+            <div id="badges-row" class="badges-row"></div>
+          </div>
+          <p style="margin-top:8px;font-size:.9rem;color:#8a85b0"><a class="discord-link" href="https://discord.gg/f8pkTJvyQ" target="_blank">Periwinklet Discord</a></p>
         </div>
       </section>
-
-      <section id="tab-winkles" class="panel hidden">
-        <div class="empty">
-          <h2>Sorry… nothing here yet.</h2>
-          <p>We’re working on it!</p>
-        </div>
-      </section>
-
       <section id="tab-market" class="panel hidden">
-        <div class="empty">
-          <h2>Sorry… nothing here yet.</h2>
-          <p>We’re working on it!</p>
-        </div>
+        <h2 style="font-family:'Titan One',cursive;color:#5c52c7;margin-bottom:20px;text-align:center">Market — Balls</h2>
+        <div class="market-grid" id="market-grid"></div>
+        <p style="text-align:center;margin-top:16px;color:#8a85b0;font-weight:600">Winkles are circles. Packs are called Balls.</p>
       </section>
-
+      <section id="tab-winkles" class="panel hidden">
+        <div class="empty"><h2>Sorry… nothing here yet.</h2><p>Winkles (circular) coming soon!</p></div>
+      </section>
       <section id="tab-chat" class="panel hidden">
-        <div class="empty">
-          <h2>Sorry… nothing here yet.</h2>
-          <p>We’re working on it!</p>
+        <div class="chat-wrap">
+          <div class="chat-header"><span>Global Chat</span><span id="online-label">Live</span></div>
+          <div class="chat-msgs" id="chat-msgs"></div>
+          <div class="chat-input-row">
+            <input type="text" id="chat-input" placeholder="Chat..." maxlength="200" onkeydown="if(event.key==='Enter')sendChat()" />
+            <button onclick="sendChat()">Send</button>
+          </div>
         </div>
       </section>
-
       <section id="tab-updates" class="panel hidden">
         <div class="updates-card">
           <h2>Updates</h2>
-          <div class="ver">Version 0.0.1</div>
+          <div class="ver">Version 0.1.0</div>
+          <ul>
+            <li>Global Chat is live</li>
+            <li>Profile page with roles and badges</li>
+            <li>Coin icon on Profile</li>
+            <li>Market scaffold with first 3 Balls</li>
+            <li>Steven rarity at 0.001 chance + badge</li>
+            <li>Content Creator badge</li>
+            <li>Admin: remove coins, set coins, lookup, add winkle queue</li>
+            <li>Discord link added</li>
+            <li>Gold checkmark for official Periwinklet account</li>
+            <li>Accounts powered by cloud database</li>
+          </ul>
+          <div class="ver" style="margin-top:18px">Version 0.0.1</div>
           <ul>
             <li>Periwinklet launched in Beta</li>
-            <li>Login & Register system live (cloud database)</li>
-            <li>Stats page with coins display</li>
+            <li>Login & Register system live</li>
             <li>Admin panel (grant coins + content creators)</li>
-            <li>Rose checkmark for TwistedBread only</li>
+            <li>Rose checkmark for TwistedBread (Owner)</li>
             <li>Blue checkmark for Content Creators</li>
-            <li>Accounts now work across all devices</li>
-            <li>Winkles, Market, Chat, and Packs coming soon</li>
-            <li>Support a Creator feature coming with packs</li>
           </ul>
           <p class="by">— TwistedBread</p>
         </div>
@@ -386,335 +293,288 @@
   </div>
 
   <audio id="pronunciation-audio" src="audio/periwinklet.wav" preload="auto"></audio>
-
   <script>
-    // ===== SUPABASE SETUP =====
     const SUPABASE_URL = "https://litliwabykfqrypaxqny.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxpdGxpd2FieWtmcXJ5cGF4cW55Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk4NTQ1NTQsImV4cCI6MjEwNTQzMDU1NH0.d9KycivK9nMrGY3rP7kGYtkIExa6h1U-kk91zhNIvVE";
     const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // Current user session (kept in localStorage for convenience)
-    function getCurrentUser() {
-      return localStorage.getItem("periwinklet_current");
-    }
-    function setCurrentUser(username) {
-      localStorage.setItem("periwinklet_current", username);
-    }
-    function clearCurrentUser() {
-      localStorage.removeItem("periwinklet_current");
+    const BALLS = [
+      { id: "starter", name: "Starter Ball", price: 25, rates: { uncommon: 55, rare: 30, epic: 12, legendary: 2.9, chroma: 0.099, steven: 0.001 } },
+      { id: "peri", name: "Periwinkle Ball", price: 50, rates: { uncommon: 40, rare: 35, epic: 18, legendary: 5.9, chroma: 1.099, steven: 0.001 } },
+      { id: "premium", name: "Premium Ball", price: 100, rates: { uncommon: 25, rare: 35, epic: 25, legendary: 12, chroma: 2.999, steven: 0.001 } }
+    ];
+
+    function getCurrentUser(){ return localStorage.getItem("periwinklet_current"); }
+    function setCurrentUser(u){ localStorage.setItem("periwinklet_current", u); }
+    function clearCurrentUser(){ localStorage.removeItem("periwinklet_current"); }
+
+    function playPronunciation(){
+      const a = document.getElementById("pronunciation-audio");
+      a.currentTime = 0; a.play().catch(()=>{});
     }
 
-    // ===== Audio =====
-    function playPronunciation() {
-      const audio = document.getElementById("pronunciation-audio");
-      audio.currentTime = 0;
-      audio.play().catch(() => {});
-    }
-
-    // ===== Modals =====
-    function showLogin() {
-      closeModals();
-      document.getElementById("login-modal").classList.remove("hidden");
-      document.getElementById("login-error").textContent = "";
-    }
-    function showRegister() {
-      closeModals();
-      document.getElementById("register-modal").classList.remove("hidden");
-      document.getElementById("register-error").textContent = "";
-    }
-    function showAdmin() {
+    function showLogin(){ closeModals(); document.getElementById("login-modal").classList.remove("hidden"); document.getElementById("login-error").textContent=""; }
+    function showRegister(){ closeModals(); document.getElementById("register-modal").classList.remove("hidden"); document.getElementById("register-error").textContent=""; }
+    function showAdmin(){
       closeModals();
       document.getElementById("admin-modal").classList.remove("hidden");
-      document.getElementById("admin-coin-msg").textContent = "";
-      document.getElementById("admin-creator-msg").textContent = "";
-      document.getElementById("admin-uncreator-msg").textContent = "";
+      ["admin-coin-user","admin-coin-amount","admin-remove-user","admin-remove-amount","admin-set-user","admin-set-amount","admin-creator-user","admin-uncreator-user","admin-winkle-name","admin-lookup-user"].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=""; });
+      ["admin-coin-msg","admin-remove-msg","admin-set-msg","admin-creator-msg","admin-uncreator-msg","admin-winkle-msg","admin-lookup-msg"].forEach(id=>{ const el=document.getElementById(id); if(el) el.textContent=""; });
     }
-    function closeModals() {
-      document.getElementById("login-modal").classList.add("hidden");
-      document.getElementById("register-modal").classList.add("hidden");
-      document.getElementById("admin-modal").classList.add("hidden");
+    function closeModals(){
+      ["login-modal","register-modal","admin-modal"].forEach(id=>document.getElementById(id).classList.add("hidden"));
     }
 
-    // ===== Register =====
-    async function handleRegister() {
-      const username = document.getElementById("register-username").value.trim();
-      const password = document.getElementById("register-password").value;
-      const password2 = document.getElementById("register-password2").value;
-      const errorEl = document.getElementById("register-error");
-      const btn = document.getElementById("register-btn");
+    function checkHTML(username){
+      if(username==="TwistedBread") return '<span class="checkmark-rose">✓<span class="tip">Owner — TwistedBread only</span></span>';
+      if(username==="Periwinklet") return '<span class="checkmark-gold">✓<span class="tip">Official Periwinklet account</span></span>';
+      if(username==="Jasper") return '<span class="checkmark-teal">✓<span class="tip">Special friend checkmark</span></span>';
+      return null;
+    }
 
-      if (!username || !password) { errorEl.textContent = "Please fill in all fields."; return; }
-      if (username.length < 3) { errorEl.textContent = "Username must be at least 3 characters."; return; }
-      if (password.length < 4) { errorEl.textContent = "Password must be at least 4 characters."; return; }
-      if (password !== password2) { errorEl.textContent = "Passwords do not match."; return; }
+    async function handleRegister(){
+      const username=document.getElementById("register-username").value.trim();
+      const password=document.getElementById("register-password").value;
+      const password2=document.getElementById("register-password2").value;
+      const errorEl=document.getElementById("register-error");
+      const btn=document.getElementById("register-btn");
+      if(!username||!password){errorEl.textContent="Please fill in all fields.";return;}
+      if(username.length<3){errorEl.textContent="Username must be at least 3 characters.";return;}
+      if(password.length<4){errorEl.textContent="Password must be at least 4 characters.";return;}
+      if(password!==password2){errorEl.textContent="Passwords do not match.";return;}
+      btn.disabled=true; btn.textContent="Creating...";
+      const {data:existing}=await sb.from("users").select("username").ilike("username",username).limit(1);
+      if(existing&&existing.length>0){errorEl.textContent="That username is already taken.";btn.disabled=false;btn.textContent="Create Account";return;}
+      const {error}=await sb.from("users").insert({username,password,coins:0,is_creator:false,badges:[]});
+      if(error){errorEl.textContent="Error creating account.";console.error(error);btn.disabled=false;btn.textContent="Create Account";return;}
+      setCurrentUser(username); closeModals(); showDashboard();
+      btn.disabled=false; btn.textContent="Create Account";
+    }
 
-      btn.disabled = true;
-      btn.textContent = "Creating...";
+    async function handleLogin(){
+      const username=document.getElementById("login-username").value.trim();
+      const password=document.getElementById("login-password").value;
+      const errorEl=document.getElementById("login-error");
+      const btn=document.getElementById("login-btn");
+      if(!username||!password){errorEl.textContent="Please fill in all fields.";return;}
+      btn.disabled=true; btn.textContent="Logging in...";
+      const {data,error}=await sb.from("users").select("*").ilike("username",username).eq("password",password).limit(1);
+      if(error||!data||data.length===0){errorEl.textContent="Wrong username or password.";btn.disabled=false;btn.textContent="Login";return;}
+      setCurrentUser(data[0].username); closeModals(); showDashboard();
+      btn.disabled=false; btn.textContent="Login";
+    }
 
-      // Check if username already exists
-      const { data: existing } = await sb
-        .from("users")
-        .select("username")
-        .ilike("username", username)
-        .limit(1);
+    function handleLogout(){ clearCurrentUser(); document.getElementById("dashboard").classList.add("hidden"); document.getElementById("homepage").classList.remove("hidden"); }
 
-      if (existing && existing.length > 0) {
-        errorEl.textContent = "That username is already taken.";
-        btn.disabled = false;
-        btn.textContent = "Create Account";
-        return;
+    async function findUser(username){
+      const {data}=await sb.from("users").select("*").ilike("username",username).limit(1);
+      return data&&data[0]?data[0]:null;
+    }
+
+    async function adminGrantCoins(){
+      const username=document.getElementById("admin-coin-user").value.trim();
+      const amount=parseInt(document.getElementById("admin-coin-amount").value,10);
+      const msg=document.getElementById("admin-coin-msg");
+      if(!username||!amount||amount<1){msg.style.color="#e74c3c";msg.textContent="Enter valid username and amount.";return;}
+      const user=await findUser(username);
+      if(!user){msg.style.color="#e74c3c";msg.textContent="User not found.";return;}
+      const {error}=await sb.from("users").update({coins:(user.coins||0)+amount}).eq("username",user.username);
+      if(error){msg.style.color="#e74c3c";msg.textContent="Failed.";return;}
+      msg.style.color="#2e7d32";msg.textContent="Gave "+amount+" coins to "+user.username+".";
+      if(getCurrentUser()&&getCurrentUser().toLowerCase()===user.username.toLowerCase()) updateStatsDisplay();
+    }
+
+    async function adminRemoveCoins(){
+      const username=document.getElementById("admin-remove-user").value.trim();
+      const amount=parseInt(document.getElementById("admin-remove-amount").value,10);
+      const msg=document.getElementById("admin-remove-msg");
+      if(!username||!amount||amount<1){msg.style.color="#e74c3c";msg.textContent="Enter valid username and amount.";return;}
+      const user=await findUser(username);
+      if(!user){msg.style.color="#e74c3c";msg.textContent="User not found.";return;}
+      const newCoins=Math.max(0,(user.coins||0)-amount);
+      const {error}=await sb.from("users").update({coins:newCoins}).eq("username",user.username);
+      if(error){msg.style.color="#e74c3c";msg.textContent="Failed.";return;}
+      msg.style.color="#2e7d32";msg.textContent="Removed "+amount+" coins from "+user.username+".";
+      if(getCurrentUser()&&getCurrentUser().toLowerCase()===user.username.toLowerCase()) updateStatsDisplay();
+    }
+
+    async function adminSetCoins(){
+      const username=document.getElementById("admin-set-user").value.trim();
+      const amount=parseInt(document.getElementById("admin-set-amount").value,10);
+      const msg=document.getElementById("admin-set-msg");
+      if(!username||isNaN(amount)||amount<0){msg.style.color="#e74c3c";msg.textContent="Enter valid username and amount.";return;}
+      const user=await findUser(username);
+      if(!user){msg.style.color="#e74c3c";msg.textContent="User not found.";return;}
+      const {error}=await sb.from("users").update({coins:amount}).eq("username",user.username);
+      if(error){msg.style.color="#e74c3c";msg.textContent="Failed.";return;}
+      msg.style.color="#2e7d32";msg.textContent="Set "+user.username+" to "+amount+" coins.";
+      if(getCurrentUser()&&getCurrentUser().toLowerCase()===user.username.toLowerCase()) updateStatsDisplay();
+    }
+
+    async function adminAddCreator(){
+      const username=document.getElementById("admin-creator-user").value.trim();
+      const msg=document.getElementById("admin-creator-msg");
+      if(!username){msg.style.color="#e74c3c";msg.textContent="Enter a username.";return;}
+      const user=await findUser(username);
+      if(!user){msg.style.color="#e74c3c";msg.textContent="User not found.";return;}
+      if(user.username==="TwistedBread"||user.username==="Periwinklet"){msg.style.color="#e74c3c";msg.textContent="That account has a special checkmark.";return;}
+      let badges=user.badges||[];
+      if(!Array.isArray(badges)) badges=[];
+      if(!badges.includes("creator")) badges.push("creator");
+      const {error}=await sb.from("users").update({is_creator:true,badges}).eq("username",user.username);
+      if(error){msg.style.color="#e74c3c";msg.textContent="Failed.";return;}
+      msg.style.color="#2e7d32";msg.textContent=user.username+" is now a Content Creator.";
+      if(getCurrentUser()&&getCurrentUser().toLowerCase()===user.username.toLowerCase()) updateStatsDisplay();
+    }
+
+    async function adminRemoveCreator(){
+      const username=document.getElementById("admin-uncreator-user").value.trim();
+      const msg=document.getElementById("admin-uncreator-msg");
+      if(!username){msg.style.color="#e74c3c";msg.textContent="Enter a username.";return;}
+      const user=await findUser(username);
+      if(!user){msg.style.color="#e74c3c";msg.textContent="User not found.";return;}
+      let badges=(user.badges||[]).filter(b=>b!=="creator");
+      const {error}=await sb.from("users").update({is_creator:false,badges}).eq("username",user.username);
+      if(error){msg.style.color="#e74c3c";msg.textContent="Failed.";return;}
+      msg.style.color="#2e7d32";msg.textContent=user.username+" is no longer a Content Creator.";
+      if(getCurrentUser()&&getCurrentUser().toLowerCase()===user.username.toLowerCase()) updateStatsDisplay();
+    }
+
+    function adminAddWinkle(){
+      const name=document.getElementById("admin-winkle-name").value.trim();
+      const msg=document.getElementById("admin-winkle-msg");
+      if(!name){msg.style.color="#e74c3c";msg.textContent="Enter a winkle name.";return;}
+      msg.style.color="#2e7d32";msg.textContent="Queued \""+name+"\" for when Winkles release.";
+    }
+
+    async function adminLookup(){
+      const username=document.getElementById("admin-lookup-user").value.trim();
+      const msg=document.getElementById("admin-lookup-msg");
+      if(!username){msg.style.color="#e74c3c";msg.textContent="Enter a username.";return;}
+      const user=await findUser(username);
+      if(!user){msg.style.color="#e74c3c";msg.textContent="User not found.";return;}
+      msg.style.color="#2e7d32";
+      msg.textContent=user.username+" | coins: "+(user.coins||0)+" | creator: "+(user.is_creator?"yes":"no")+" | badges: "+JSON.stringify(user.badges||[]);
+    }
+
+    async function updateStatsDisplay(){
+      const username=getCurrentUser(); if(!username) return;
+      const {data}=await sb.from("users").select("*").eq("username",username).limit(1);
+      if(!data||!data[0]) return;
+      const user=data[0];
+      document.getElementById("stats-avatar").textContent=user.username.charAt(0).toUpperCase();
+      document.getElementById("coins-num").textContent=user.coins||0;
+      const nameEl=document.getElementById("stats-username");
+      const ck=checkHTML(user.username);
+      if(ck) nameEl.innerHTML=user.username+" "+ck;
+      else if(user.is_creator) nameEl.innerHTML=user.username+' <span class="checkmark-blue">✓<span class="tip">Content Creator</span></span>';
+      else nameEl.textContent=user.username;
+
+      const role=document.getElementById("stats-role");
+      role.className="role-badge";
+      if(user.username==="TwistedBread"){ role.textContent="Owner"; role.classList.add("role-owner"); }
+      else if(user.username==="Periwinklet"){ role.textContent="Periwinkle"; role.classList.add("role-periwinkle"); }
+      else if(user.is_creator){ role.textContent="Content Creator"; role.classList.add("role-creator"); }
+      else role.textContent="Player";
+
+      const row=document.getElementById("badges-row");
+      row.innerHTML="";
+      const badges=user.badges||[];
+      if(badges.includes("steven")){
+        const d=document.createElement("div"); d.className="badge-item"; d.title="Pulled a Steven!";
+        d.innerHTML='<img src="badges/steven.png" alt="Steven" />'; row.appendChild(d);
       }
+      if(badges.includes("creator")||user.is_creator){
+        const d=document.createElement("div"); d.className="badge-item"; d.title="Content Creator";
+        d.innerHTML='<img src="badges/creator.jpg" alt="Creator" />'; row.appendChild(d);
+      }
+      if(row.children.length===0) row.innerHTML='<span style="color:#aaa;font-size:.9rem">No badges yet</span>';
+    }
 
-      const { error } = await sb.from("users").insert({
-        username: username,
-        password: password,
-        coins: 0,
-        is_creator: false
+    function renderMarket(){
+      const grid=document.getElementById("market-grid");
+      grid.innerHTML="";
+      BALLS.forEach(ball=>{
+        const card=document.createElement("div");
+        card.className="ball-card";
+        card.innerHTML='<div style="font-size:2.5rem">🔮</div><h3>'+ball.name+'</h3><div class="price"><img src="img/coin.png" /> '+ball.price+'</div><button onclick="buyBall(\''+ball.id+'\')">Open</button>';
+        grid.appendChild(card);
       });
-
-      if (error) {
-        errorEl.textContent = "Error creating account. Try again.";
-        console.error(error);
-        btn.disabled = false;
-        btn.textContent = "Create Account";
-        return;
-      }
-
-      setCurrentUser(username);
-      closeModals();
-      showDashboard();
-      btn.disabled = false;
-      btn.textContent = "Create Account";
     }
 
-    // ===== Login =====
-    async function handleLogin() {
-      const username = document.getElementById("login-username").value.trim();
-      const password = document.getElementById("login-password").value;
-      const errorEl = document.getElementById("login-error");
-      const btn = document.getElementById("login-btn");
-
-      if (!username || !password) { errorEl.textContent = "Please fill in all fields."; return; }
-
-      btn.disabled = true;
-      btn.textContent = "Logging in...";
-
-      const { data, error } = await sb
-        .from("users")
-        .select("*")
-        .ilike("username", username)
-        .eq("password", password)
-        .limit(1);
-
-      if (error || !data || data.length === 0) {
-        errorEl.textContent = "Wrong username or password.";
-        btn.disabled = false;
-        btn.textContent = "Login";
-        return;
-      }
-
-      setCurrentUser(data[0].username);
-      closeModals();
-      showDashboard();
-      btn.disabled = false;
-      btn.textContent = "Login";
+    function rollRarity(rates){
+      const r=Math.random()*100;
+      let acc=0;
+      const order=["uncommon","rare","epic","legendary","chroma","steven"];
+      for(const k of order){ acc+=rates[k]; if(r<=acc) return k; }
+      return "uncommon";
     }
 
-    // ===== Logout =====
-    function handleLogout() {
-      clearCurrentUser();
-      document.getElementById("dashboard").classList.add("hidden");
-      document.getElementById("homepage").classList.remove("hidden");
+    async function buyBall(id){
+      const ball=BALLS.find(b=>b.id===id); if(!ball) return;
+      const username=getCurrentUser(); if(!username) return;
+      const user=await findUser(username); if(!user) return;
+      if((user.coins||0)<ball.price){ alert("Not enough coins!"); return; }
+      const rarity=rollRarity(ball.rates);
+      let badges=user.badges||[]; if(!Array.isArray(badges)) badges=[];
+      if(rarity==="steven" && !badges.includes("steven")) badges.push("steven");
+      await sb.from("users").update({coins:(user.coins||0)-ball.price, badges}).eq("username",user.username);
+      alert("You opened a "+ball.name+" and got: "+rarity.toUpperCase()+"!"+(rarity==="steven"?" STEVEN BADGE UNLOCKED!":""));
+      updateStatsDisplay();
     }
 
-    // ===== Admin Actions =====
-    async function adminGrantCoins() {
-      const username = document.getElementById("admin-coin-user").value.trim();
-      const amount = parseInt(document.getElementById("admin-coin-amount").value, 10);
-      const msg = document.getElementById("admin-coin-msg");
-
-      if (!username || !amount || amount < 1) {
-        msg.style.color = "#e74c3c";
-        msg.textContent = "Enter a valid username and amount.";
-        return;
+    async function loadChat(){
+      const {data}=await sb.from("messages").select("*").order("created_at",{ascending:true}).limit(50);
+      const box=document.getElementById("chat-msgs");
+      box.innerHTML="";
+      if(!data) return;
+      for(const m of data){
+        const div=document.createElement("div");
+        div.className="chat-msg";
+        let ck="";
+        if(m.username==="TwistedBread") ck='<span class="ck checkmark-rose">✓</span>';
+        else if(m.username==="Periwinklet") ck='<span class="ck checkmark-gold">✓</span>';
+        else if(m.username==="Jasper") ck='<span class="ck checkmark-teal">✓</span>';
+        else {
+          // quick creator check not loaded; skip for speed or could cache
+        }
+        div.innerHTML='<div class="meta">'+ck+' <strong>'+m.username+'</strong></div><div>'+escapeHtml(m.message)+'</div>';
+        box.appendChild(div);
       }
-
-      const { data, error } = await sb
-        .from("users")
-        .select("username, coins")
-        .ilike("username", username)
-        .limit(1);
-
-      if (error || !data || data.length === 0) {
-        msg.style.color = "#e74c3c";
-        msg.textContent = "User not found.";
-        return;
-      }
-
-      const user = data[0];
-      const newCoins = (user.coins || 0) + amount;
-
-      const { error: updateError } = await sb
-        .from("users")
-        .update({ coins: newCoins })
-        .eq("username", user.username);
-
-      if (updateError) {
-        msg.style.color = "#e74c3c";
-        msg.textContent = "Failed to grant coins.";
-        return;
-      }
-
-      msg.style.color = "#2e7d32";
-      msg.textContent = "Gave " + amount + " coins to " + user.username + ".";
-      if (getCurrentUser() && getCurrentUser().toLowerCase() === user.username.toLowerCase()) {
-        updateStatsDisplay();
-      }
+      box.scrollTop=box.scrollHeight;
     }
 
-    async function adminAddCreator() {
-      const username = document.getElementById("admin-creator-user").value.trim();
-      const msg = document.getElementById("admin-creator-msg");
+    function escapeHtml(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
 
-      if (!username) {
-        msg.style.color = "#e74c3c";
-        msg.textContent = "Enter a username.";
-        return;
-      }
-
-      const { data, error } = await sb
-        .from("users")
-        .select("username")
-        .ilike("username", username)
-        .limit(1);
-
-      if (error || !data || data.length === 0) {
-        msg.style.color = "#e74c3c";
-        msg.textContent = "User not found.";
-        return;
-      }
-
-      const user = data[0];
-      if (user.username === "TwistedBread") {
-        msg.style.color = "#e74c3c";
-        msg.textContent = "TwistedBread already has the special rose checkmark.";
-        return;
-      }
-
-      const { error: updateError } = await sb
-        .from("users")
-        .update({ is_creator: true })
-        .eq("username", user.username);
-
-      if (updateError) {
-        msg.style.color = "#e74c3c";
-        msg.textContent = "Failed to update.";
-        return;
-      }
-
-      msg.style.color = "#2e7d32";
-      msg.textContent = user.username + " is now a Content Creator.";
-      if (getCurrentUser() && getCurrentUser().toLowerCase() === user.username.toLowerCase()) {
-        updateStatsDisplay();
-      }
+    async function sendChat(){
+      const input=document.getElementById("chat-input");
+      const msg=input.value.trim(); if(!msg) return;
+      const username=getCurrentUser(); if(!username) return;
+      input.value="";
+      await sb.from("messages").insert({username, message:msg});
+      loadChat();
     }
 
-    async function adminRemoveCreator() {
-      const username = document.getElementById("admin-uncreator-user").value.trim();
-      const msg = document.getElementById("admin-uncreator-msg");
-
-      if (!username) {
-        msg.style.color = "#e74c3c";
-        msg.textContent = "Enter a username.";
-        return;
-      }
-
-      const { data, error } = await sb
-        .from("users")
-        .select("username")
-        .ilike("username", username)
-        .limit(1);
-
-      if (error || !data || data.length === 0) {
-        msg.style.color = "#e74c3c";
-        msg.textContent = "User not found.";
-        return;
-      }
-
-      const user = data[0];
-      const { error: updateError } = await sb
-        .from("users")
-        .update({ is_creator: false })
-        .eq("username", user.username);
-
-      if (updateError) {
-        msg.style.color = "#e74c3c";
-        msg.textContent = "Failed to update.";
-        return;
-      }
-
-      msg.style.color = "#2e7d32";
-      msg.textContent = user.username + " is no longer a Content Creator.";
-      if (getCurrentUser() && getCurrentUser().toLowerCase() === user.username.toLowerCase()) {
-        updateStatsDisplay();
-      }
-    }
-
-    // ===== Dashboard =====
-    async function updateStatsDisplay() {
-      const username = getCurrentUser();
-      if (!username) return;
-
-      const { data, error } = await sb
-        .from("users")
-        .select("*")
-        .eq("username", username)
-        .limit(1);
-
-      if (error || !data || data.length === 0) return;
-
-      const user = data[0];
-      document.getElementById("stats-avatar").textContent = user.username.charAt(0).toUpperCase();
-      document.getElementById("stats-coins").textContent = (user.coins || 0) + " coins";
-
-      const nameEl = document.getElementById("stats-username");
-      if (user.username === "TwistedBread") {
-        nameEl.innerHTML = user.username + ' <span class="checkmark-rose">✓</span>';
-      } else if (user.is_creator) {
-        nameEl.innerHTML = user.username + ' <span class="checkmark-blue">✓</span>';
-      } else {
-        nameEl.textContent = user.username;
-      }
-    }
-
-    function showDashboard() {
-      const username = getCurrentUser();
-      if (!username) return;
-
+    function showDashboard(){
+      const username=getCurrentUser(); if(!username) return;
       document.getElementById("homepage").classList.add("hidden");
       document.getElementById("dashboard").classList.remove("hidden");
       updateStatsDisplay();
-
-      const adminBtn = document.getElementById("admin-btn");
-      if (username === "TwistedBread") {
-        adminBtn.classList.remove("hidden");
-      } else {
-        adminBtn.classList.add("hidden");
-      }
-
+      renderMarket();
+      const adminBtn=document.getElementById("admin-btn");
+      if(username==="TwistedBread") adminBtn.classList.remove("hidden"); else adminBtn.classList.add("hidden");
       switchTab("stats");
     }
 
-    function switchTab(tabName) {
-      document.querySelectorAll(".panel").forEach(el => el.classList.add("hidden"));
-      document.querySelectorAll(".nav-btn").forEach(el => el.classList.remove("active"));
-      document.getElementById("tab-" + tabName).classList.remove("hidden");
-      document.querySelector('.nav-btn[data-tab="' + tabName + '"]').classList.add("active");
+    function switchTab(tabName){
+      document.querySelectorAll(".panel").forEach(el=>el.classList.add("hidden"));
+      document.querySelectorAll(".nav-btn").forEach(el=>el.classList.remove("active"));
+      document.getElementById("tab-"+tabName).classList.remove("hidden");
+      document.querySelector('.nav-btn[data-tab="'+tabName+'"]').classList.add("active");
+      if(tabName==="chat") loadChat();
     }
 
-    window.addEventListener("DOMContentLoaded", () => {
-      if (getCurrentUser()) showDashboard();
-    });
+    window.addEventListener("DOMContentLoaded",()=>{ if(getCurrentUser()) showDashboard(); });
   </script>
 </body>
 </html>
