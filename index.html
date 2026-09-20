@@ -23,8 +23,9 @@
       flex: 1; background: #b5aaff; position: relative; overflow: hidden;
     }
     .logo {
-      font-family: 'Titan One', cursive; font-size: 2.8rem; color: white;
-      text-shadow: 0 4px 0 rgba(70,60,150,0.35);
+      font-family: 'Titan One', cursive; font-size: 3.5rem; color: white;
+      text-shadow: 0 5px 0 rgba(70,60,150,0.35);
+      letter-spacing: 1px;
     }
     .hero {
       flex: 1; display: flex; flex-direction: column; justify-content: center; max-width: 420px;
@@ -119,16 +120,17 @@
     /* ===== DASHBOARD ===== */
     #dashboard { display: flex; min-height: 100vh; background: #d8d3ff; }
     .sidebar {
-      width: 220px; background: #7b6ef0; color: white;
-      display: flex; flex-direction: column; padding: 24px 14px;
+      width: 240px; background: #7b6ef0; color: white;
+      display: flex; flex-direction: column; padding: 24px 16px;
     }
     .sidebar-top {
-      display: flex; align-items: center; gap: 8px; padding: 0 8px 28px;
+      display: flex; align-items: center; gap: 10px; padding: 0 6px 28px;
+      flex-wrap: wrap;
     }
-    .sidebar-top .logo { font-size: 1.5rem; }
+    .sidebar-top .logo { font-size: 1.55rem; }
     .beta-tag {
-      background: rgba(255,255,255,0.25); font-size: 0.65rem; font-weight: 800;
-      padding: 2px 7px; border-radius: 5px; letter-spacing: 1px;
+      background: rgba(255,255,255,0.25); font-size: 0.7rem; font-weight: 800;
+      padding: 3px 9px; border-radius: 6px; letter-spacing: 1px;
     }
     .nav { display: flex; flex-direction: column; gap: 6px; flex: 1; }
     .nav-btn {
@@ -322,13 +324,15 @@
       <section id="tab-updates" class="panel hidden">
         <div class="updates-card">
           <h2>Updates</h2>
-          <div class="ver">Version 0.0.1</div>
+          <div class="ver">Version 0.0.2</div>
           <ul>
-            <li>Periwinklet has launched in Beta!</li>
-            <li>Login & Register are live.</li>
-            <li>Stats page is available.</li>
-            <li>Winkles, Market, Chat, and Packs coming soon.</li>
-            <li>There are currently no packs or Winkles yet.</li>
+            <li>Larger Periwinklet logo on homepage</li>
+            <li>Improved sidebar spacing for BETA tag</li>
+            <li>Added Winkles tab</li>
+            <li>Login & Register are live</li>
+            <li>Stats page is available</li>
+            <li>Winkles, Market, Chat, and Packs coming soon</li>
+            <li>There are currently no packs or Winkles yet</li>
           </ul>
           <p class="by">— TwistedBread</p>
         </div>
