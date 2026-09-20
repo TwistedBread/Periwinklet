@@ -56,9 +56,8 @@
     .nav-btn{background:transparent;border:none;color:rgba(255,255,255,.8);font-family:'Nunito',sans-serif;font-weight:700;font-size:1rem;padding:12px 14px;border-radius:11px;cursor:pointer;text-align:left;transition:background .2s,color .2s}
     .nav-btn:hover{background:rgba(255,255,255,.15);color:#fff}.nav-btn.active{background:#fff;color:#6b5fd4}
     .sidebar-bottom{display:flex;flex-direction:column;gap:8px;margin-top:12px}
-    .admin-icon-btn{background:rgba(255,255,255,.12);border:none;color:#fff;font-size:1.4rem;padding:10px;border-radius:11px;cursor:pointer;display:block;width:100%;text-align:center}
-    .admin-icon-btn:hover{background:rgba(255,255,255,.25)}
-    .admin-icon-btn.hidden{display:none!important}
+    .admin-icon-btn{background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.4);color:#fff;font-size:1.15rem;font-weight:800;font-family:'Nunito',sans-serif;padding:11px;border-radius:11px;cursor:pointer;width:100%;text-align:center;letter-spacing:0.3px}
+    .admin-icon-btn:hover{background:rgba(255,255,255,.3);border-color:#fff}
     .logout-btn{background:rgba(255,255,255,.15);border:none;color:#fff;font-weight:700;font-family:'Nunito',sans-serif;padding:11px;border-radius:11px;cursor:pointer}
     .logout-btn:hover{background:rgba(255,255,255,.28)}
     .content{flex:1;padding:40px;overflow-y:auto}
@@ -239,7 +238,7 @@
         <button class="nav-btn" data-tab="updates" onclick="switchTab('updates')">Updates</button>
       </nav>
       <div class="sidebar-bottom">
-        <button id="admin-btn" class="admin-icon-btn hidden" onclick="showAdmin()" title="Admin Panel">⚙️ Admin</button>
+        <button id="admin-btn" class="admin-icon-btn" style="display:none" onclick="showAdmin()" title="Admin Panel">⚙️ Admin</button>
         <button class="logout-btn" onclick="handleLogout()">Logout</button>
       </div>
     </aside>
@@ -633,18 +632,12 @@
       updateStatsDisplay();
       renderMarket();
 
-      // Admin gear — only for TwistedBread and Periwinkle (case-insensitive)
+      // Admin button — ONLY for TwistedBread and Periwinkle (case-insensitive)
       const adminBtn = document.getElementById("admin-btn");
-      const lower = (username || "").toLowerCase().trim();
+      const lower = String(username || "").toLowerCase().trim();
       const isAdmin = (lower === "twistedbread" || lower === "periwinkle");
-      if (isAdmin) {
-        adminBtn.classList.remove("hidden");
-        adminBtn.style.display = "block";
-      } else {
-        adminBtn.classList.add("hidden");
-        adminBtn.style.display = "none";
-      }
-      console.log("[Periwinklet] Logged in as:", username, "| Admin access:", isAdmin);
+      adminBtn.style.display = isAdmin ? "block" : "none";
+      console.log("%c[Periwinklet] User: " + username + " | Admin: " + isAdmin, "color: #7b6ef0; font-weight: bold");
 
       switchTab("stats");
     }
