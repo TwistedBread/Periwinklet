@@ -66,10 +66,14 @@
     .stats-box{background:#fff;border-radius:24px;padding:50px 40px;display:flex;flex-direction:column;align-items:center;gap:14px;max-width:480px;margin:0 auto;box-shadow:0 8px 28px rgba(100,80,180,.12)}
     .avatar{width:110px;height:110px;border-radius:50%;background:linear-gradient(135deg,#9b8cf5,#7b6ef0);display:flex;align-items:center;justify-content:center;font-family:'Titan One',cursive;font-size:3.2rem;color:#fff;text-transform:uppercase;box-shadow:0 6px 0 #5c52c7}
     .uname{font-family:'Titan One',cursive;font-size:2.1rem;color:#5c52c7;display:flex;align-items:center;gap:8px;position:relative}
+    .uname-owner{color:#e91e8c;text-shadow:0 0 8px rgba(233,30,140,.55), 0 0 16px rgba(233,30,140,.25)}
+    .uname-periwinkle{color:#f9a825;text-shadow:0 0 8px rgba(249,168,37,.55), 0 0 16px rgba(249,168,37,.3)}
+    .uname-jasper{color:#00bfa5;text-shadow:0 0 8px rgba(0,191,165,.55), 0 0 16px rgba(0,191,165,.3)}
+    .uname-creator{color:#2196f3;text-shadow:0 0 8px rgba(33,150,243,.5), 0 0 14px rgba(33,150,243,.25)}
     .checkmark-rose{color:#e91e8c;font-size:1.5rem;cursor:help;position:relative}
     .checkmark-blue{color:#2196f3;font-size:1.5rem;cursor:help;position:relative}
     .checkmark-gold{color:#ffc107;font-size:1.5rem;cursor:help;position:relative;text-shadow:0 0 6px rgba(255,193,7,.5)}
-    .checkmark-teal{color:#26c6a0;font-size:1.5rem;cursor:help;position:relative}
+    .checkmark-teal{color:#00bfa5;font-size:1.5rem;cursor:help;position:relative;text-shadow:0 0 6px rgba(0,191,165,.45)}
     .tip{display:none;position:absolute;bottom:120%;left:50%;transform:translateX(-50%);background:#2e2a4e;color:#fff;font-family:'Nunito',sans-serif;font-size:.75rem;font-weight:600;padding:8px 12px;border-radius:8px;white-space:nowrap;z-index:20}
     .checkmark-rose:hover .tip,.checkmark-blue:hover .tip,.checkmark-gold:hover .tip,.checkmark-teal:hover .tip{display:block}
     .coins-row{display:flex;align-items:center;gap:8px;font-size:1.2rem;font-weight:700;color:#7b6ef0;background:#f0edff;padding:8px 18px;border-radius:12px}
@@ -286,8 +290,9 @@
             <li>Content Creator badge</li>
             <li>Admin: remove coins, set coins, lookup, add winkle queue</li>
             <li>Discord link added</li>
-            <li>Gold checkmark for official Periwinklet account</li>
             <li>Accounts powered by cloud database</li>
+            <li>Chat checkmarks now show on the right (including blue creator checks)</li>
+            <li>Admin panel for TwistedBread & Periwinkle</li>
           </ul>
           <div class="ver" style="margin-top:18px">Version 0.0.1</div>
           <ul>
@@ -437,7 +442,7 @@
       if(!username){msg.style.color="#e74c3c";msg.textContent="Enter a username.";return;}
       const user=await findUser(username);
       if(!user){msg.style.color="#e74c3c";msg.textContent="User not found.";return;}
-      if(user.username==="TwistedBread"||user.username==="Periwinklet"){msg.style.color="#e74c3c";msg.textContent="That account has a special checkmark.";return;}
+      if(user.username==="TwistedBread"||user.username==="Periwinklet"||user.username==="Jasper"){msg.style.color="#e74c3c";msg.textContent="That account has a special checkmark.";return;}
       let badges=user.badges||[];
       if(!Array.isArray(badges)) badges=[];
       if(!badges.includes("creator")) badges.push("creator");
@@ -508,10 +513,18 @@
       document.getElementById("stats-avatar").textContent=user.username.charAt(0).toUpperCase();
       document.getElementById("coins-num").textContent=user.coins||0;
       const nameEl=document.getElementById("stats-username");
+      // Reset special name classes
+      nameEl.className="uname";
       const ck=checkHTML(user.username);
       if(ck) nameEl.innerHTML=user.username+" "+ck;
       else if(user.is_creator) nameEl.innerHTML=user.username+' <span class="checkmark-blue">✓<span class="tip">Content Creator</span></span>';
       else nameEl.textContent=user.username;
+
+      // Special name glow / outline
+      if(user.username==="TwistedBread") nameEl.classList.add("uname-owner");
+      else if(user.username==="Periwinklet") nameEl.classList.add("uname-periwinkle");
+      else if(user.username==="Jasper") nameEl.classList.add("uname-jasper");
+      else if(user.is_creator) nameEl.classList.add("uname-creator");
 
       const role=document.getElementById("stats-role");
       role.className="role-badge";
@@ -522,16 +535,21 @@
 
       const row=document.getElementById("badges-row");
       row.innerHTML="";
-      const badges=user.badges||[];
-      if(badges.includes("steven")){
-        const d=document.createElement("div"); d.className="badge-item"; d.title="Pulled a Steven!";
-        d.innerHTML='<img src="badges/steven.png" alt="Steven" />'; row.appendChild(d);
+      // Periwinklet account never shows any badges
+      if(user.username==="Periwinklet"){
+        row.innerHTML='<span style="color:#aaa;font-size:.9rem">No badges yet</span>';
+      } else {
+        const badges=user.badges||[];
+        if(badges.includes("steven")){
+          const d=document.createElement("div"); d.className="badge-item"; d.title="Pulled a Steven!";
+          d.innerHTML='<img src="badges/steven.png" alt="Steven" />'; row.appendChild(d);
+        }
+        if(badges.includes("creator")||user.is_creator){
+          const d=document.createElement("div"); d.className="badge-item"; d.title="Content Creator";
+          d.innerHTML='<img src="badges/creator.jpg" alt="Creator" />'; row.appendChild(d);
+        }
+        if(row.children.length===0) row.innerHTML='<span style="color:#aaa;font-size:.9rem">No badges yet</span>';
       }
-      if(badges.includes("creator")||user.is_creator){
-        const d=document.createElement("div"); d.className="badge-item"; d.title="Content Creator";
-        d.innerHTML='<img src="badges/creator.jpg" alt="Creator" />'; row.appendChild(d);
-      }
-      if(row.children.length===0) row.innerHTML='<span style="color:#aaa;font-size:.9rem">No badges yet</span>';
     }
 
     function renderMarket(){
@@ -570,7 +588,16 @@
       const {data}=await sb.from("messages").select("*").order("created_at",{ascending:true}).limit(50);
       const box=document.getElementById("chat-msgs");
       box.innerHTML="";
-      if(!data) return;
+      if(!data || data.length===0) return;
+
+      // Collect unique usernames and fetch their creator status in one query
+      const usernames = [...new Set(data.map(m => m.username))];
+      const {data: userRows} = await sb.from("users").select("username, is_creator").in("username", usernames);
+      const creatorMap = {};
+      if(userRows){
+        userRows.forEach(u => { creatorMap[u.username] = !!u.is_creator; });
+      }
+
       for(const m of data){
         const div=document.createElement("div");
         div.className="chat-msg";
@@ -578,10 +605,9 @@
         if(m.username==="TwistedBread") ck='<span class="ck checkmark-rose">✓</span>';
         else if(m.username==="Periwinklet") ck='<span class="ck checkmark-gold">✓</span>';
         else if(m.username==="Jasper") ck='<span class="ck checkmark-teal">✓</span>';
-        else {
-          // quick creator check not loaded; skip for speed or could cache
-        }
-        div.innerHTML='<div class="meta">'+ck+' <strong>'+m.username+'</strong></div><div>'+escapeHtml(m.message)+'</div>';
+        else if(creatorMap[m.username]) ck='<span class="ck checkmark-blue">✓</span>';
+        // No checkmark if they don't have one
+        div.innerHTML='<div class="meta"><strong>'+escapeHtml(m.username)+'</strong> '+ck+'</div><div>'+escapeHtml(m.message)+'</div>';
         box.appendChild(div);
       }
       box.scrollTop=box.scrollHeight;
@@ -605,7 +631,8 @@
       updateStatsDisplay();
       renderMarket();
       const adminBtn=document.getElementById("admin-btn");
-      if(username==="TwistedBread") adminBtn.classList.remove("hidden"); else adminBtn.classList.add("hidden");
+      if(username==="TwistedBread" || username==="Periwinkle") adminBtn.classList.remove("hidden");
+      else adminBtn.classList.add("hidden");
       switchTab("stats");
     }
 
