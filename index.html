@@ -13,7 +13,6 @@
     .hidden { display: none !important; }
     .page { min-height: 100vh; }
 
-    /* ===== HOMEPAGE ===== */
     .split { display: flex; min-height: 100vh; }
     .split-left {
       flex: 1; background: #9b8cf5; padding: 28px 48px;
@@ -24,8 +23,7 @@
     }
     .logo {
       font-family: 'Titan One', cursive; font-size: 3.5rem; color: white;
-      text-shadow: 0 5px 0 rgba(70,60,150,0.35);
-      letter-spacing: 1px;
+      text-shadow: 0 5px 0 rgba(70,60,150,0.35); letter-spacing: 1px;
     }
     .hero {
       flex: 1; display: flex; flex-direction: column; justify-content: center; max-width: 420px;
@@ -72,9 +70,7 @@
     }
     .btn-login:hover, .btn-register:hover { transform: translateY(-2px); }
 
-    .circle {
-      position: absolute; border-radius: 50%; background: rgba(255,255,255,0.18);
-    }
+    .circle { position: absolute; border-radius: 50%; background: rgba(255,255,255,0.18); }
     .c1 { width: 140px; height: 140px; top: 12%; left: 18%; }
     .c2 { width: 90px; height: 90px; top: 28%; left: 55%; }
     .c3 { width: 160px; height: 160px; top: 48%; left: 30%; }
@@ -82,15 +78,14 @@
     .c5 { width: 110px; height: 110px; top: 75%; left: 15%; }
     .c6 { width: 50px; height: 50px; top: 18%; left: 75%; }
 
-    /* ===== MODALS ===== */
     .modal {
       position: fixed; inset: 0; background: rgba(50,40,120,0.55);
       display: flex; align-items: center; justify-content: center; z-index: 100;
     }
     .modal-box {
       background: #f4f1ff; border-radius: 20px; padding: 36px 32px;
-      width: 90%; max-width: 380px; position: relative;
-      box-shadow: 0 16px 40px rgba(80,60,160,0.3);
+      width: 90%; max-width: 400px; position: relative;
+      box-shadow: 0 16px 40px rgba(80,60,160,0.3); max-height: 90vh; overflow-y: auto;
     }
     .modal-box h2 {
       font-family: 'Titan One', cursive; font-size: 1.9rem; color: #6b5fd4;
@@ -99,10 +94,11 @@
     .modal-box input {
       width: 100%; padding: 13px 16px; margin-bottom: 12px;
       border: 2px solid #d5d0f5; border-radius: 12px; font-size: 1rem;
-      font-family: 'Nunito', sans-serif; outline: none;
+      font-family: 'Nunito', sans-serif; outline: none; background: white;
     }
     .modal-box input:focus { border-color: #7b6ef0; }
     .error { color: #e74c3c; font-size: 0.9rem; min-height: 20px; }
+    .success { color: #2e7d32; font-size: 0.9rem; min-height: 20px; }
     .btn-primary {
       width: 100%; background: #7b6ef0; color: white; border: none;
       font-weight: 800; font-family: 'Nunito', sans-serif; font-size: 1.05rem;
@@ -116,16 +112,20 @@
       position: absolute; top: 14px; right: 16px; background: none;
       border: none; font-size: 1.2rem; color: #999; cursor: pointer;
     }
+    .admin-section {
+      background: #ebe7ff; border-radius: 12px; padding: 16px; margin-bottom: 16px;
+    }
+    .admin-section h3 {
+      font-size: 1rem; color: #5c52c7; margin-bottom: 10px; font-weight: 800;
+    }
 
-    /* ===== DASHBOARD ===== */
     #dashboard { display: flex; min-height: 100vh; background: #d8d3ff; }
     .sidebar {
       width: 240px; background: #7b6ef0; color: white;
       display: flex; flex-direction: column; padding: 24px 16px;
     }
     .sidebar-top {
-      display: flex; align-items: center; gap: 10px; padding: 0 6px 28px;
-      flex-wrap: wrap;
+      display: flex; align-items: center; gap: 10px; padding: 0 6px 28px; flex-wrap: wrap;
     }
     .sidebar-top .logo { font-size: 1.55rem; }
     .beta-tag {
@@ -141,10 +141,19 @@
     }
     .nav-btn:hover { background: rgba(255,255,255,0.15); color: white; }
     .nav-btn.active { background: white; color: #6b5fd4; }
+    .sidebar-bottom {
+      display: flex; flex-direction: column; gap: 8px; margin-top: 12px;
+    }
+    .admin-icon-btn {
+      background: rgba(255,255,255,0.12); border: none; color: white;
+      font-size: 1.3rem; padding: 10px; border-radius: 11px; cursor: pointer;
+      transition: background 0.2s;
+    }
+    .admin-icon-btn:hover { background: rgba(255,255,255,0.25); }
     .logout-btn {
       background: rgba(255,255,255,0.15); border: none; color: white;
       font-weight: 700; font-family: 'Nunito', sans-serif; padding: 11px;
-      border-radius: 11px; cursor: pointer; margin-top: 12px;
+      border-radius: 11px; cursor: pointer;
     }
     .logout-btn:hover { background: rgba(255,255,255,0.28); }
     .content { flex: 1; padding: 40px; }
@@ -171,7 +180,12 @@
       font-family: 'Titan One', cursive; font-size: 2.1rem; color: #5c52c7;
       display: flex; align-items: center; gap: 8px;
     }
-    .checkmark { color: #4caf50; font-size: 1.5rem; }
+    .checkmark-rose { color: #e91e8c; font-size: 1.5rem; }
+    .checkmark-blue { color: #2196f3; font-size: 1.5rem; }
+    .coins-display {
+      font-size: 1.2rem; font-weight: 700; color: #7b6ef0;
+      background: #f0edff; padding: 8px 18px; border-radius: 12px;
+    }
 
     .empty {
       background: white; border-radius: 24px; padding: 80px 30px;
@@ -201,6 +215,7 @@
     @media (max-width: 800px) {
       .split { flex-direction: column; }
       .hero-title { font-size: 2.6rem; }
+      .logo { font-size: 2.6rem; }
       .split-left, .split-right { padding: 24px; }
       .circle { display: none; }
       #dashboard { flex-direction: column; }
@@ -216,7 +231,6 @@
 </head>
 <body>
 
-  <!-- HOMEPAGE -->
   <div id="homepage" class="page">
     <div class="split">
       <div class="split-left">
@@ -248,7 +262,6 @@
     </div>
   </div>
 
-  <!-- LOGIN MODAL -->
   <div id="login-modal" class="modal hidden">
     <div class="modal-box">
       <button class="modal-x" onclick="closeModals()">✕</button>
@@ -261,7 +274,6 @@
     </div>
   </div>
 
-  <!-- REGISTER MODAL -->
   <div id="register-modal" class="modal hidden">
     <div class="modal-box">
       <button class="modal-x" onclick="closeModals()">✕</button>
@@ -275,7 +287,32 @@
     </div>
   </div>
 
-  <!-- DASHBOARD -->
+  <div id="admin-modal" class="modal hidden">
+    <div class="modal-box">
+      <button class="modal-x" onclick="closeModals()">✕</button>
+      <h2>Admin Panel</h2>
+      <div class="admin-section">
+        <h3>Grant Coins</h3>
+        <input type="text" id="admin-coin-user" placeholder="Username" />
+        <input type="number" id="admin-coin-amount" placeholder="Amount of coins" min="1" />
+        <button class="btn-primary" onclick="adminGrantCoins()">Grant Coins</button>
+        <p id="admin-coin-msg" class="success"></p>
+      </div>
+      <div class="admin-section">
+        <h3>Add Content Creator</h3>
+        <input type="text" id="admin-creator-user" placeholder="Username" />
+        <button class="btn-primary" onclick="adminAddCreator()">Make Content Creator</button>
+        <p id="admin-creator-msg" class="success"></p>
+      </div>
+      <div class="admin-section">
+        <h3>Remove Content Creator</h3>
+        <input type="text" id="admin-uncreator-user" placeholder="Username" />
+        <button class="btn-primary" onclick="adminRemoveCreator()">Remove Creator</button>
+        <p id="admin-uncreator-msg" class="success"></p>
+      </div>
+    </div>
+  </div>
+
   <div id="dashboard" class="page hidden">
     <aside class="sidebar">
       <div class="sidebar-top">
@@ -289,7 +326,10 @@
         <button class="nav-btn" data-tab="chat" onclick="switchTab('chat')">Chat</button>
         <button class="nav-btn" data-tab="updates" onclick="switchTab('updates')">Updates</button>
       </nav>
-      <button class="logout-btn" onclick="handleLogout()">Logout</button>
+      <div class="sidebar-bottom">
+        <button id="admin-btn" class="admin-icon-btn hidden" onclick="showAdmin()" title="Admin Panel">⚙️</button>
+        <button class="logout-btn" onclick="handleLogout()">Logout</button>
+      </div>
     </aside>
 
     <main class="content">
@@ -297,6 +337,7 @@
         <div class="stats-box">
           <div id="stats-avatar" class="avatar"></div>
           <h1 id="stats-username" class="uname"></h1>
+          <div id="stats-coins" class="coins-display">0 coins</div>
         </div>
       </section>
 
@@ -324,15 +365,16 @@
       <section id="tab-updates" class="panel hidden">
         <div class="updates-card">
           <h2>Updates</h2>
-          <div class="ver">Version 0.0.2</div>
+          <div class="ver">Version 0.0.1</div>
           <ul>
-            <li>Larger Periwinklet logo on homepage</li>
-            <li>Improved sidebar spacing for BETA tag</li>
-            <li>Added Winkles tab</li>
-            <li>Login & Register are live</li>
-            <li>Stats page is available</li>
+            <li>Periwinklet launched in Beta</li>
+            <li>Login & Register system live</li>
+            <li>Stats page with coins display</li>
+            <li>Admin panel (grant coins + content creators)</li>
+            <li>Rose checkmark for TwistedBread only</li>
+            <li>Blue checkmark for Content Creators</li>
             <li>Winkles, Market, Chat, and Packs coming soon</li>
-            <li>There are currently no packs or Winkles yet</li>
+            <li>Support a Creator feature coming with packs</li>
           </ul>
           <p class="by">— TwistedBread</p>
         </div>
@@ -359,6 +401,11 @@
     function clearCurrentUser() {
       localStorage.removeItem("periwinklet_current");
     }
+    function ensureUserDefaults(user) {
+      if (user.coins === undefined) user.coins = 0;
+      if (user.isCreator === undefined) user.isCreator = false;
+      return user;
+    }
 
     function playPronunciation() {
       const audio = document.getElementById("pronunciation-audio");
@@ -376,9 +423,17 @@
       document.getElementById("register-modal").classList.remove("hidden");
       document.getElementById("register-error").textContent = "";
     }
+    function showAdmin() {
+      closeModals();
+      document.getElementById("admin-modal").classList.remove("hidden");
+      document.getElementById("admin-coin-msg").textContent = "";
+      document.getElementById("admin-creator-msg").textContent = "";
+      document.getElementById("admin-uncreator-msg").textContent = "";
+    }
     function closeModals() {
       document.getElementById("login-modal").classList.add("hidden");
       document.getElementById("register-modal").classList.add("hidden");
+      document.getElementById("admin-modal").classList.add("hidden");
     }
 
     function handleRegister() {
@@ -401,7 +456,7 @@
         }
       }
 
-      users[username] = { password, joined: new Date().toISOString() };
+      users[username] = { password, coins: 0, isCreator: false, joined: new Date().toISOString() };
       saveUsers(users);
       setCurrentUser(username);
       closeModals();
@@ -429,6 +484,8 @@
         return;
       }
 
+      users[foundKey] = ensureUserDefaults(users[foundKey]);
+      saveUsers(users);
       setCurrentUser(foundKey);
       closeModals();
       showDashboard();
@@ -440,20 +497,136 @@
       document.getElementById("homepage").classList.remove("hidden");
     }
 
+    function findUserKey(username) {
+      const users = getUsers();
+      const lower = username.toLowerCase();
+      for (const key of Object.keys(users)) {
+        if (key.toLowerCase() === lower) return key;
+      }
+      return null;
+    }
+
+    function adminGrantCoins() {
+      const username = document.getElementById("admin-coin-user").value.trim();
+      const amount = parseInt(document.getElementById("admin-coin-amount").value, 10);
+      const msg = document.getElementById("admin-coin-msg");
+
+      if (!username || !amount || amount < 1) {
+        msg.style.color = "#e74c3c";
+        msg.textContent = "Enter a valid username and amount.";
+        return;
+      }
+
+      const key = findUserKey(username);
+      if (!key) {
+        msg.style.color = "#e74c3c";
+        msg.textContent = "User not found.";
+        return;
+      }
+
+      const users = getUsers();
+      users[key] = ensureUserDefaults(users[key]);
+      users[key].coins += amount;
+      saveUsers(users);
+
+      msg.style.color = "#2e7d32";
+      msg.textContent = "Gave " + amount + " coins to " + key + ".";
+      if (getCurrentUser() === key) updateStatsDisplay();
+    }
+
+    function adminAddCreator() {
+      const username = document.getElementById("admin-creator-user").value.trim();
+      const msg = document.getElementById("admin-creator-msg");
+
+      if (!username) {
+        msg.style.color = "#e74c3c";
+        msg.textContent = "Enter a username.";
+        return;
+      }
+
+      const key = findUserKey(username);
+      if (!key) {
+        msg.style.color = "#e74c3c";
+        msg.textContent = "User not found.";
+        return;
+      }
+
+      if (key === "TwistedBread") {
+        msg.style.color = "#e74c3c";
+        msg.textContent = "TwistedBread already has the special rose checkmark.";
+        return;
+      }
+
+      const users = getUsers();
+      users[key] = ensureUserDefaults(users[key]);
+      users[key].isCreator = true;
+      saveUsers(users);
+
+      msg.style.color = "#2e7d32";
+      msg.textContent = key + " is now a Content Creator.";
+      if (getCurrentUser() === key) updateStatsDisplay();
+    }
+
+    function adminRemoveCreator() {
+      const username = document.getElementById("admin-uncreator-user").value.trim();
+      const msg = document.getElementById("admin-uncreator-msg");
+
+      if (!username) {
+        msg.style.color = "#e74c3c";
+        msg.textContent = "Enter a username.";
+        return;
+      }
+
+      const key = findUserKey(username);
+      if (!key) {
+        msg.style.color = "#e74c3c";
+        msg.textContent = "User not found.";
+        return;
+      }
+
+      const users = getUsers();
+      users[key] = ensureUserDefaults(users[key]);
+      users[key].isCreator = false;
+      saveUsers(users);
+
+      msg.style.color = "#2e7d32";
+      msg.textContent = key + " is no longer a Content Creator.";
+      if (getCurrentUser() === key) updateStatsDisplay();
+    }
+
+    function updateStatsDisplay() {
+      const username = getCurrentUser();
+      if (!username) return;
+
+      const users = getUsers();
+      const user = ensureUserDefaults(users[username] || {});
+
+      document.getElementById("stats-avatar").textContent = username.charAt(0).toUpperCase();
+      document.getElementById("stats-coins").textContent = user.coins + " coins";
+
+      const nameEl = document.getElementById("stats-username");
+      if (username === "TwistedBread") {
+        nameEl.innerHTML = username + ' <span class="checkmark-rose">✓</span>';
+      } else if (user.isCreator) {
+        nameEl.innerHTML = username + ' <span class="checkmark-blue">✓</span>';
+      } else {
+        nameEl.textContent = username;
+      }
+    }
+
     function showDashboard() {
       const username = getCurrentUser();
       if (!username) return;
 
       document.getElementById("homepage").classList.add("hidden");
       document.getElementById("dashboard").classList.remove("hidden");
+      updateStatsDisplay();
 
-      document.getElementById("stats-avatar").textContent = username.charAt(0).toUpperCase();
-
-      const nameEl = document.getElementById("stats-username");
+      const adminBtn = document.getElementById("admin-btn");
       if (username === "TwistedBread") {
-        nameEl.innerHTML = username + ' <span class="checkmark">✓</span>';
+        adminBtn.classList.remove("hidden");
       } else {
-        nameEl.textContent = username;
+        adminBtn.classList.add("hidden");
       }
 
       switchTab("stats");
@@ -463,7 +636,7 @@
       document.querySelectorAll(".panel").forEach(el => el.classList.add("hidden"));
       document.querySelectorAll(".nav-btn").forEach(el => el.classList.remove("active"));
       document.getElementById("tab-" + tabName).classList.remove("hidden");
-      document.querySelector(`.nav-btn[data-tab="${tabName}"]`).classList.add("active");
+      document.querySelector('.nav-btn[data-tab="' + tabName + '"]').classList.add("active");
     }
 
     window.addEventListener("DOMContentLoaded", () => {
