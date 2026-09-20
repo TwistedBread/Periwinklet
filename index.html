@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Titan+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: 'Nunito', sans-serif; background: #c9c3ff; color: #2e2a4e; min-height: 100vh; }
@@ -106,6 +107,7 @@
       box-shadow: 0 4px 0 #5c52c7;
     }
     .btn-primary:hover { background: #8b7ff5; }
+    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
     .switch { text-align: center; margin-top: 16px; color: #6a6590; }
     .switch span { color: #6b5fd4; font-weight: 700; cursor: pointer; }
     .modal-x {
@@ -269,7 +271,7 @@
       <input type="text" id="login-username" placeholder="Username" maxlength="20" />
       <input type="password" id="login-password" placeholder="Password" />
       <p id="login-error" class="error"></p>
-      <button class="btn-primary" onclick="handleLogin()">Login</button>
+      <button class="btn-primary" id="login-btn" onclick="handleLogin()">Login</button>
       <p class="switch">Don't have an account? <span onclick="showRegister()">Register</span></p>
     </div>
   </div>
@@ -282,7 +284,7 @@
       <input type="password" id="register-password" placeholder="Password" />
       <input type="password" id="register-password2" placeholder="Confirm Password" />
       <p id="register-error" class="error"></p>
-      <button class="btn-primary" onclick="handleRegister()">Create Account</button>
+      <button class="btn-primary" id="register-btn" onclick="handleRegister()">Create Account</button>
       <p class="switch">Already have an account? <span onclick="showLogin()">Login</span></p>
     </div>
   </div>
@@ -368,11 +370,12 @@
           <div class="ver">Version 0.0.1</div>
           <ul>
             <li>Periwinklet launched in Beta</li>
-            <li>Login & Register system live</li>
+            <li>Login & Register system live (cloud database)</li>
             <li>Stats page with coins display</li>
             <li>Admin panel (grant coins + content creators)</li>
             <li>Rose checkmark for TwistedBread only</li>
             <li>Blue checkmark for Content Creators</li>
+            <li>Accounts now work across all devices</li>
             <li>Winkles, Market, Chat, and Packs coming soon</li>
             <li>Support a Creator feature coming with packs</li>
           </ul>
@@ -385,13 +388,12 @@
   <audio id="pronunciation-audio" src="audio/periwinklet.wav" preload="auto"></audio>
 
   <script>
-    function getUsers() {
-      const data = localStorage.getItem("periwinklet_users");
-      return data ? JSON.parse(data) : {};
-    }
-    function saveUsers(users) {
-      localStorage.setItem("periwinklet_users", JSON.stringify(users));
-    }
+    // ===== SUPABASE SETUP =====
+    const SUPABASE_URL = "https://litliwabykfqrypaxqny.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxpdGxpd2FieWtmcXJ5cGF4cW55Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk4NTQ1NTQsImV4cCI6MjEwNTQzMDU1NH0.d9KycivK9nMrGY3rP7kGYtkIExa6h1U-kk91zhNIvVE";
+    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // Current user session (kept in localStorage for convenience)
     function getCurrentUser() {
       return localStorage.getItem("periwinklet_current");
     }
@@ -401,18 +403,15 @@
     function clearCurrentUser() {
       localStorage.removeItem("periwinklet_current");
     }
-    function ensureUserDefaults(user) {
-      if (user.coins === undefined) user.coins = 0;
-      if (user.isCreator === undefined) user.isCreator = false;
-      return user;
-    }
 
+    // ===== Audio =====
     function playPronunciation() {
       const audio = document.getElementById("pronunciation-audio");
       audio.currentTime = 0;
       audio.play().catch(() => {});
     }
 
+    // ===== Modals =====
     function showLogin() {
       closeModals();
       document.getElementById("login-modal").classList.remove("hidden");
@@ -436,77 +435,100 @@
       document.getElementById("admin-modal").classList.add("hidden");
     }
 
-    function handleRegister() {
+    // ===== Register =====
+    async function handleRegister() {
       const username = document.getElementById("register-username").value.trim();
       const password = document.getElementById("register-password").value;
       const password2 = document.getElementById("register-password2").value;
       const errorEl = document.getElementById("register-error");
+      const btn = document.getElementById("register-btn");
 
       if (!username || !password) { errorEl.textContent = "Please fill in all fields."; return; }
       if (username.length < 3) { errorEl.textContent = "Username must be at least 3 characters."; return; }
       if (password.length < 4) { errorEl.textContent = "Password must be at least 4 characters."; return; }
       if (password !== password2) { errorEl.textContent = "Passwords do not match."; return; }
 
-      const users = getUsers();
-      const lower = username.toLowerCase();
-      for (const existing of Object.keys(users)) {
-        if (existing.toLowerCase() === lower) {
-          errorEl.textContent = "That username is already taken.";
-          return;
-        }
-      }
+      btn.disabled = true;
+      btn.textContent = "Creating...";
 
-      users[username] = { password, coins: 0, isCreator: false, joined: new Date().toISOString() };
-      saveUsers(users);
-      setCurrentUser(username);
-      closeModals();
-      showDashboard();
-    }
+      // Check if username already exists
+      const { data: existing } = await sb
+        .from("users")
+        .select("username")
+        .ilike("username", username)
+        .limit(1);
 
-    function handleLogin() {
-      const username = document.getElementById("login-username").value.trim();
-      const password = document.getElementById("login-password").value;
-      const errorEl = document.getElementById("login-error");
-
-      if (!username || !password) { errorEl.textContent = "Please fill in all fields."; return; }
-
-      const users = getUsers();
-      let foundKey = null;
-      for (const key of Object.keys(users)) {
-        if (key.toLowerCase() === username.toLowerCase()) {
-          foundKey = key;
-          break;
-        }
-      }
-
-      if (!foundKey || users[foundKey].password !== password) {
-        errorEl.textContent = "Wrong username or password.";
+      if (existing && existing.length > 0) {
+        errorEl.textContent = "That username is already taken.";
+        btn.disabled = false;
+        btn.textContent = "Create Account";
         return;
       }
 
-      users[foundKey] = ensureUserDefaults(users[foundKey]);
-      saveUsers(users);
-      setCurrentUser(foundKey);
+      const { error } = await sb.from("users").insert({
+        username: username,
+        password: password,
+        coins: 0,
+        is_creator: false
+      });
+
+      if (error) {
+        errorEl.textContent = "Error creating account. Try again.";
+        console.error(error);
+        btn.disabled = false;
+        btn.textContent = "Create Account";
+        return;
+      }
+
+      setCurrentUser(username);
       closeModals();
       showDashboard();
+      btn.disabled = false;
+      btn.textContent = "Create Account";
     }
 
+    // ===== Login =====
+    async function handleLogin() {
+      const username = document.getElementById("login-username").value.trim();
+      const password = document.getElementById("login-password").value;
+      const errorEl = document.getElementById("login-error");
+      const btn = document.getElementById("login-btn");
+
+      if (!username || !password) { errorEl.textContent = "Please fill in all fields."; return; }
+
+      btn.disabled = true;
+      btn.textContent = "Logging in...";
+
+      const { data, error } = await sb
+        .from("users")
+        .select("*")
+        .ilike("username", username)
+        .eq("password", password)
+        .limit(1);
+
+      if (error || !data || data.length === 0) {
+        errorEl.textContent = "Wrong username or password.";
+        btn.disabled = false;
+        btn.textContent = "Login";
+        return;
+      }
+
+      setCurrentUser(data[0].username);
+      closeModals();
+      showDashboard();
+      btn.disabled = false;
+      btn.textContent = "Login";
+    }
+
+    // ===== Logout =====
     function handleLogout() {
       clearCurrentUser();
       document.getElementById("dashboard").classList.add("hidden");
       document.getElementById("homepage").classList.remove("hidden");
     }
 
-    function findUserKey(username) {
-      const users = getUsers();
-      const lower = username.toLowerCase();
-      for (const key of Object.keys(users)) {
-        if (key.toLowerCase() === lower) return key;
-      }
-      return null;
-    }
-
-    function adminGrantCoins() {
+    // ===== Admin Actions =====
+    async function adminGrantCoins() {
       const username = document.getElementById("admin-coin-user").value.trim();
       const amount = parseInt(document.getElementById("admin-coin-amount").value, 10);
       const msg = document.getElementById("admin-coin-msg");
@@ -517,24 +539,40 @@
         return;
       }
 
-      const key = findUserKey(username);
-      if (!key) {
+      const { data, error } = await sb
+        .from("users")
+        .select("username, coins")
+        .ilike("username", username)
+        .limit(1);
+
+      if (error || !data || data.length === 0) {
         msg.style.color = "#e74c3c";
         msg.textContent = "User not found.";
         return;
       }
 
-      const users = getUsers();
-      users[key] = ensureUserDefaults(users[key]);
-      users[key].coins += amount;
-      saveUsers(users);
+      const user = data[0];
+      const newCoins = (user.coins || 0) + amount;
+
+      const { error: updateError } = await sb
+        .from("users")
+        .update({ coins: newCoins })
+        .eq("username", user.username);
+
+      if (updateError) {
+        msg.style.color = "#e74c3c";
+        msg.textContent = "Failed to grant coins.";
+        return;
+      }
 
       msg.style.color = "#2e7d32";
-      msg.textContent = "Gave " + amount + " coins to " + key + ".";
-      if (getCurrentUser() === key) updateStatsDisplay();
+      msg.textContent = "Gave " + amount + " coins to " + user.username + ".";
+      if (getCurrentUser() && getCurrentUser().toLowerCase() === user.username.toLowerCase()) {
+        updateStatsDisplay();
+      }
     }
 
-    function adminAddCreator() {
+    async function adminAddCreator() {
       const username = document.getElementById("admin-creator-user").value.trim();
       const msg = document.getElementById("admin-creator-msg");
 
@@ -544,30 +582,44 @@
         return;
       }
 
-      const key = findUserKey(username);
-      if (!key) {
+      const { data, error } = await sb
+        .from("users")
+        .select("username")
+        .ilike("username", username)
+        .limit(1);
+
+      if (error || !data || data.length === 0) {
         msg.style.color = "#e74c3c";
         msg.textContent = "User not found.";
         return;
       }
 
-      if (key === "TwistedBread") {
+      const user = data[0];
+      if (user.username === "TwistedBread") {
         msg.style.color = "#e74c3c";
         msg.textContent = "TwistedBread already has the special rose checkmark.";
         return;
       }
 
-      const users = getUsers();
-      users[key] = ensureUserDefaults(users[key]);
-      users[key].isCreator = true;
-      saveUsers(users);
+      const { error: updateError } = await sb
+        .from("users")
+        .update({ is_creator: true })
+        .eq("username", user.username);
+
+      if (updateError) {
+        msg.style.color = "#e74c3c";
+        msg.textContent = "Failed to update.";
+        return;
+      }
 
       msg.style.color = "#2e7d32";
-      msg.textContent = key + " is now a Content Creator.";
-      if (getCurrentUser() === key) updateStatsDisplay();
+      msg.textContent = user.username + " is now a Content Creator.";
+      if (getCurrentUser() && getCurrentUser().toLowerCase() === user.username.toLowerCase()) {
+        updateStatsDisplay();
+      }
     }
 
-    function adminRemoveCreator() {
+    async function adminRemoveCreator() {
       const username = document.getElementById("admin-uncreator-user").value.trim();
       const msg = document.getElementById("admin-uncreator-msg");
 
@@ -577,40 +629,61 @@
         return;
       }
 
-      const key = findUserKey(username);
-      if (!key) {
+      const { data, error } = await sb
+        .from("users")
+        .select("username")
+        .ilike("username", username)
+        .limit(1);
+
+      if (error || !data || data.length === 0) {
         msg.style.color = "#e74c3c";
         msg.textContent = "User not found.";
         return;
       }
 
-      const users = getUsers();
-      users[key] = ensureUserDefaults(users[key]);
-      users[key].isCreator = false;
-      saveUsers(users);
+      const user = data[0];
+      const { error: updateError } = await sb
+        .from("users")
+        .update({ is_creator: false })
+        .eq("username", user.username);
+
+      if (updateError) {
+        msg.style.color = "#e74c3c";
+        msg.textContent = "Failed to update.";
+        return;
+      }
 
       msg.style.color = "#2e7d32";
-      msg.textContent = key + " is no longer a Content Creator.";
-      if (getCurrentUser() === key) updateStatsDisplay();
+      msg.textContent = user.username + " is no longer a Content Creator.";
+      if (getCurrentUser() && getCurrentUser().toLowerCase() === user.username.toLowerCase()) {
+        updateStatsDisplay();
+      }
     }
 
-    function updateStatsDisplay() {
+    // ===== Dashboard =====
+    async function updateStatsDisplay() {
       const username = getCurrentUser();
       if (!username) return;
 
-      const users = getUsers();
-      const user = ensureUserDefaults(users[username] || {});
+      const { data, error } = await sb
+        .from("users")
+        .select("*")
+        .eq("username", username)
+        .limit(1);
 
-      document.getElementById("stats-avatar").textContent = username.charAt(0).toUpperCase();
-      document.getElementById("stats-coins").textContent = user.coins + " coins";
+      if (error || !data || data.length === 0) return;
+
+      const user = data[0];
+      document.getElementById("stats-avatar").textContent = user.username.charAt(0).toUpperCase();
+      document.getElementById("stats-coins").textContent = (user.coins || 0) + " coins";
 
       const nameEl = document.getElementById("stats-username");
-      if (username === "TwistedBread") {
-        nameEl.innerHTML = username + ' <span class="checkmark-rose">✓</span>';
-      } else if (user.isCreator) {
-        nameEl.innerHTML = username + ' <span class="checkmark-blue">✓</span>';
+      if (user.username === "TwistedBread") {
+        nameEl.innerHTML = user.username + ' <span class="checkmark-rose">✓</span>';
+      } else if (user.is_creator) {
+        nameEl.innerHTML = user.username + ' <span class="checkmark-blue">✓</span>';
       } else {
-        nameEl.textContent = username;
+        nameEl.textContent = user.username;
       }
     }
 
