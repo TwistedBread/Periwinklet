@@ -198,7 +198,14 @@
         <p id="admin-uncreator-msg" class="success"></p>
       </div>
       <div class="admin-section">
-        <h3>Add Winkle (coming soon)</h3>
+        <h3>Grant Winkle to Player</h3>
+        <input type="text" id="admin-gw-user" placeholder="Username" />
+        <input type="text" id="admin-gw-name" placeholder="Winkle name" />
+        <button class="btn-primary" onclick="adminGrantWinkle()">Grant Winkle</button>
+        <p id="admin-gw-msg" class="success"></p>
+      </div>
+      <div class="admin-section">
+        <h3>Add Winkle (queue for release)</h3>
         <input type="text" id="admin-winkle-name" placeholder="Winkle name" />
         <button class="btn-primary" onclick="adminAddWinkle()">Queue Winkle</button>
         <p id="admin-winkle-msg" class="success"></p>
@@ -235,7 +242,7 @@
         <div class="stats-box">
           <div id="stats-avatar" class="avatar"></div>
           <h1 id="stats-username" class="uname"></h1>
-          <div id="stats-coins" class="coins-row"><img src="img/coin.png" alt="coin" /> <span id="coins-num">0</span></div>
+          <div id="stats-coins" class="coins-row"><img id="coin-img" src="img/coin.png" alt="🪙" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'" /><span style="display:none;font-size:1.3rem">🪙</span> <span id="coins-num">0</span></div>
           <div id="stats-role" class="role-badge">Player</div>
           <div class="badges-section">
             <h3>Badges</h3>
@@ -245,9 +252,10 @@
         </div>
       </section>
       <section id="tab-market" class="panel hidden">
-        <h2 style="font-family:'Titan One',cursive;color:#5c52c7;margin-bottom:20px;text-align:center">Market — Balls</h2>
-        <div class="market-grid" id="market-grid"></div>
-        <p style="text-align:center;margin-top:16px;color:#8a85b0;font-weight:600">Winkles are circles. Packs are called Balls.</p>
+        <div class="empty">
+          <h2>Sorry… nothing here yet.</h2>
+          <p>Balls coming soon — TwistedBread is designing them!</p>
+        </div>
       </section>
       <section id="tab-winkles" class="panel hidden">
         <div class="empty"><h2>Sorry… nothing here yet.</h2><p>Winkles (circular) coming soon!</p></div>
@@ -270,8 +278,8 @@
             <li>Global Chat is live</li>
             <li>Profile page with roles and badges</li>
             <li>Coin icon on Profile</li>
-            <li>Market scaffold with first 3 Balls</li>
-            <li>Steven rarity at 0.001 chance + badge</li>
+            <li>Market ready for custom Balls</li>
+            <li>Admin can grant Winkles to specific players</li>
             <li>Content Creator badge</li>
             <li>Admin: remove coins, set coins, lookup, add winkle queue</li>
             <li>Discord link added</li>
@@ -298,11 +306,7 @@
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxpdGxpd2FieWtmcXJ5cGF4cW55Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk4NTQ1NTQsImV4cCI6MjEwNTQzMDU1NH0.d9KycivK9nMrGY3rP7kGYtkIExa6h1U-kk91zhNIvVE";
     const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    const BALLS = [
-      { id: "starter", name: "Starter Ball", price: 25, rates: { uncommon: 55, rare: 30, epic: 12, legendary: 2.9, chroma: 0.099, steven: 0.001 } },
-      { id: "peri", name: "Periwinkle Ball", price: 50, rates: { uncommon: 40, rare: 35, epic: 18, legendary: 5.9, chroma: 1.099, steven: 0.001 } },
-      { id: "premium", name: "Premium Ball", price: 100, rates: { uncommon: 25, rare: 35, epic: 25, legendary: 12, chroma: 2.999, steven: 0.001 } }
-    ];
+    const BALLS = [];
 
     function getCurrentUser(){ return localStorage.getItem("periwinklet_current"); }
     function setCurrentUser(u){ localStorage.setItem("periwinklet_current", u); }
@@ -318,12 +322,25 @@
     function showAdmin(){
       closeModals();
       document.getElementById("admin-modal").classList.remove("hidden");
-      ["admin-coin-user","admin-coin-amount","admin-remove-user","admin-remove-amount","admin-set-user","admin-set-amount","admin-creator-user","admin-uncreator-user","admin-winkle-name","admin-lookup-user"].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=""; });
-      ["admin-coin-msg","admin-remove-msg","admin-set-msg","admin-creator-msg","admin-uncreator-msg","admin-winkle-msg","admin-lookup-msg"].forEach(id=>{ const el=document.getElementById(id); if(el) el.textContent=""; });
+      ["admin-coin-user","admin-coin-amount","admin-remove-user","admin-remove-amount","admin-set-user","admin-set-amount","admin-creator-user","admin-uncreator-user","admin-winkle-name","admin-lookup-user","admin-gw-user","admin-gw-name"].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=""; });
+      ["admin-coin-msg","admin-remove-msg","admin-set-msg","admin-creator-msg","admin-uncreator-msg","admin-winkle-msg","admin-lookup-msg","admin-gw-msg"].forEach(id=>{ const el=document.getElementById(id); if(el) el.textContent=""; });
     }
     function closeModals(){
-      ["login-modal","register-modal","admin-modal"].forEach(id=>document.getElementById(id).classList.add("hidden"));
+      ["login-modal","register-modal","admin-modal"].forEach(id=>{
+        const el=document.getElementById(id);
+        if(el) el.classList.add("hidden");
+      });
     }
+    // Click outside modal box to close
+    document.addEventListener("click", function(e){
+      ["login-modal","register-modal","admin-modal"].forEach(id=>{
+        const modal=document.getElementById(id);
+        if(modal && !modal.classList.contains("hidden") && e.target===modal) closeModals();
+      });
+    });
+    document.addEventListener("keydown", function(e){
+      if(e.key==="Escape") closeModals();
+    });
 
     function checkHTML(username){
       if(username==="TwistedBread") return '<span class="checkmark-rose">✓<span class="tip">Owner — TwistedBread only</span></span>';
@@ -438,6 +455,29 @@
       if(error){msg.style.color="#e74c3c";msg.textContent="Failed.";return;}
       msg.style.color="#2e7d32";msg.textContent=user.username+" is no longer a Content Creator.";
       if(getCurrentUser()&&getCurrentUser().toLowerCase()===user.username.toLowerCase()) updateStatsDisplay();
+    }
+
+
+    async function adminGrantWinkle(){
+      const username=document.getElementById("admin-gw-user").value.trim();
+      const winkle=document.getElementById("admin-gw-name").value.trim();
+      const msg=document.getElementById("admin-gw-msg");
+      if(!username||!winkle){msg.style.color="#e74c3c";msg.textContent="Enter username and winkle name.";return;}
+      const user=await findUser(username);
+      if(!user){msg.style.color="#e74c3c";msg.textContent="User not found.";return;}
+      let inventory=user.inventory||[];
+      if(!Array.isArray(inventory)) inventory=[];
+      inventory.push({name:winkle, granted_at:new Date().toISOString()});
+      const {error}=await sb.from("users").update({inventory}).eq("username",user.username);
+      if(error){
+        // inventory column may not exist yet - store in badges-style note
+        msg.style.color="#e74c3c";
+        msg.textContent="Failed. Add an 'inventory' jsonb column (default []) on users table, then try again.";
+        console.error(error);
+        return;
+      }
+      msg.style.color="#2e7d32";
+      msg.textContent="Granted ""+winkle+"" to "+user.username+".";
     }
 
     function adminAddWinkle(){
