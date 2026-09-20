@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Periwinklet</title>
-  <link rel="icon" type="image/png" href="img/logo.png" />
+  <link rel="icon" type="image/png" href="favicon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Titan+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -242,7 +242,7 @@
         <div class="stats-box">
           <div id="stats-avatar" class="avatar"></div>
           <h1 id="stats-username" class="uname"></h1>
-          <div id="stats-coins" class="coins-row"><img id="coin-img" src="img/coin.png" alt="🪙" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'" /><span style="display:none;font-size:1.3rem">🪙</span> <span id="coins-num">0</span></div>
+          <div id="stats-coins" class="coins-row"><img id="coin-img" src="img/coin-sm.png" alt="🪙" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'" /><span style="display:none;font-size:1.3rem">🪙</span> <span id="coins-num">0</span></div>
           <div id="stats-role" class="role-badge">Player</div>
           <div class="badges-section">
             <h3>Badges</h3>
@@ -254,11 +254,14 @@
       <section id="tab-market" class="panel hidden">
         <div class="empty">
           <h2>Sorry… nothing here yet.</h2>
-          <p>Balls coming soon — TwistedBread is designing them!</p>
+          <p>We’re working on it!</p>
         </div>
       </section>
       <section id="tab-winkles" class="panel hidden">
-        <div class="empty"><h2>Sorry… nothing here yet.</h2><p>Winkles (circular) coming soon!</p></div>
+        <div class="empty">
+          <h2>Sorry… nothing here yet.</h2>
+          <p>We’re working on it!</p>
+        </div>
       </section>
       <section id="tab-chat" class="panel hidden">
         <div class="chat-wrap">
@@ -477,7 +480,7 @@
         return;
       }
       msg.style.color="#2e7d32";
-      msg.textContent="Granted ""+winkle+"" to "+user.username+".";
+      msg.textContent="Granted " + winkle + " to " + user.username + ".";
     }
 
     function adminAddWinkle(){
@@ -537,7 +540,7 @@
       BALLS.forEach(ball=>{
         const card=document.createElement("div");
         card.className="ball-card";
-        card.innerHTML='<div style="font-size:2.5rem">🔮</div><h3>'+ball.name+'</h3><div class="price"><img src="img/coin.png" /> '+ball.price+'</div><button onclick="buyBall(\''+ball.id+'\')">Open</button>';
+        card.innerHTML='<div style="font-size:2.5rem">🔮</div><h3>'+ball.name+'</h3><div class="price"><img src="img/coin-sm.png" /> '+ball.price+'</div><button onclick="buyBall(\''+ball.id+'\')">Open</button>';
         grid.appendChild(card);
       });
     }
