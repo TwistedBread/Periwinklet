@@ -56,8 +56,9 @@
     .nav-btn{background:transparent;border:none;color:rgba(255,255,255,.8);font-family:'Nunito',sans-serif;font-weight:700;font-size:1rem;padding:12px 14px;border-radius:11px;cursor:pointer;text-align:left;transition:background .2s,color .2s}
     .nav-btn:hover{background:rgba(255,255,255,.15);color:#fff}.nav-btn.active{background:#fff;color:#6b5fd4}
     .sidebar-bottom{display:flex;flex-direction:column;gap:8px;margin-top:12px}
-    .admin-icon-btn{background:rgba(255,255,255,.12);border:none;color:#fff;font-size:1.3rem;padding:10px;border-radius:11px;cursor:pointer}
+    .admin-icon-btn{background:rgba(255,255,255,.12);border:none;color:#fff;font-size:1.4rem;padding:10px;border-radius:11px;cursor:pointer;display:block;width:100%;text-align:center}
     .admin-icon-btn:hover{background:rgba(255,255,255,.25)}
+    .admin-icon-btn.hidden{display:none!important}
     .logout-btn{background:rgba(255,255,255,.15);border:none;color:#fff;font-weight:700;font-family:'Nunito',sans-serif;padding:11px;border-radius:11px;cursor:pointer}
     .logout-btn:hover{background:rgba(255,255,255,.28)}
     .content{flex:1;padding:40px;overflow-y:auto}
@@ -74,8 +75,9 @@
     .checkmark-blue{color:#2196f3;font-size:1.5rem;cursor:help;position:relative}
     .checkmark-gold{color:#ffc107;font-size:1.5rem;cursor:help;position:relative;text-shadow:0 0 6px rgba(255,193,7,.5)}
     .checkmark-teal{color:#00bfa5;font-size:1.5rem;cursor:help;position:relative;text-shadow:0 0 6px rgba(0,191,165,.45)}
-    .tip{display:none;position:absolute;bottom:120%;left:50%;transform:translateX(-50%);background:#2e2a4e;color:#fff;font-family:'Nunito',sans-serif;font-size:.75rem;font-weight:600;padding:8px 12px;border-radius:8px;white-space:nowrap;z-index:20}
+    .tip{display:none;position:absolute;bottom:120%;left:50%;transform:translateX(-50%);background:#2e2a4e;color:#fff;font-family:'Nunito',sans-serif;font-size:.75rem;font-weight:600;padding:8px 12px;border-radius:8px;white-space:nowrap;z-index:50;pointer-events:none;box-shadow:0 4px 12px rgba(0,0,0,.25)}
     .checkmark-rose:hover .tip,.checkmark-blue:hover .tip,.checkmark-gold:hover .tip,.checkmark-teal:hover .tip{display:block}
+    .chat-msg .meta .ck{position:relative;cursor:help}
     .coins-row{display:flex;align-items:center;gap:8px;font-size:1.2rem;font-weight:700;color:#7b6ef0;background:#f0edff;padding:8px 18px;border-radius:12px}
     .coins-row img{width:28px;height:28px}
     .role-badge{font-weight:800;font-size:.9rem;padding:5px 14px;border-radius:20px;background:#ebe7ff;color:#5c52c7}
@@ -237,7 +239,7 @@
         <button class="nav-btn" data-tab="updates" onclick="switchTab('updates')">Updates</button>
       </nav>
       <div class="sidebar-bottom">
-        <button id="admin-btn" class="admin-icon-btn hidden" onclick="showAdmin()" title="Admin Panel">⚙️</button>
+        <button id="admin-btn" class="admin-icon-btn hidden" onclick="showAdmin()" title="Admin Panel">⚙️ Admin</button>
         <button class="logout-btn" onclick="handleLogout()">Logout</button>
       </div>
     </aside>
@@ -602,10 +604,10 @@
         const div=document.createElement("div");
         div.className="chat-msg";
         let ck="";
-        if(m.username==="TwistedBread") ck='<span class="ck checkmark-rose">✓</span>';
-        else if(m.username==="Periwinklet") ck='<span class="ck checkmark-gold">✓</span>';
-        else if(m.username==="Jasper") ck='<span class="ck checkmark-teal">✓</span>';
-        else if(creatorMap[m.username]) ck='<span class="ck checkmark-blue">✓</span>';
+        if(m.username==="TwistedBread") ck='<span class="ck checkmark-rose">✓<span class="tip">Owner — TwistedBread only</span></span>';
+        else if(m.username==="Periwinklet") ck='<span class="ck checkmark-gold">✓<span class="tip">Official Periwinklet account</span></span>';
+        else if(m.username==="Jasper") ck='<span class="ck checkmark-teal">✓<span class="tip">Special friend checkmark</span></span>';
+        else if(creatorMap[m.username]) ck='<span class="ck checkmark-blue">✓<span class="tip">Content Creator</span></span>';
         // No checkmark if they don't have one
         div.innerHTML='<div class="meta"><strong>'+escapeHtml(m.username)+'</strong> '+ck+'</div><div>'+escapeHtml(m.message)+'</div>';
         box.appendChild(div);
@@ -630,9 +632,20 @@
       document.getElementById("dashboard").classList.remove("hidden");
       updateStatsDisplay();
       renderMarket();
-      const adminBtn=document.getElementById("admin-btn");
-      if(username==="TwistedBread" || username==="Periwinkle") adminBtn.classList.remove("hidden");
-      else adminBtn.classList.add("hidden");
+
+      // Admin gear — only for TwistedBread and Periwinkle (case-insensitive)
+      const adminBtn = document.getElementById("admin-btn");
+      const lower = (username || "").toLowerCase().trim();
+      const isAdmin = (lower === "twistedbread" || lower === "periwinkle");
+      if (isAdmin) {
+        adminBtn.classList.remove("hidden");
+        adminBtn.style.display = "block";
+      } else {
+        adminBtn.classList.add("hidden");
+        adminBtn.style.display = "none";
+      }
+      console.log("[Periwinklet] Logged in as:", username, "| Admin access:", isAdmin);
+
       switchTab("stats");
     }
 
